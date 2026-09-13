@@ -5,7 +5,6 @@ import {
   AlertTriangle, 
   Copy, 
   CheckCheck, 
-  HelpCircle, 
   Award, 
   Zap 
 } from 'lucide-react';
@@ -26,8 +25,7 @@ export default function GeminiInsightsCard({ geminiInsights }) {
     recruiterHiringVerdict = 'Strong Contender',
     keyStrengths = [],
     criticalWeaknesses = [],
-    rewrittenBulletPoints = [],
-    interviewPrepQuestions = []
+    rewrittenBulletPoints = []
   } = geminiInsights;
 
   let verdictColor = 'bg-[#E8F5E9] dark:bg-[#FAB818] text-[#2E7D32] dark:text-[#083d1c] font-bold';
@@ -55,7 +53,7 @@ export default function GeminiInsightsCard({ geminiInsights }) {
               </div>
             </div>
             <p className="text-xs text-[#717171] dark:text-[#E8F5E9]">
-              Generative AI evaluation providing executive recruiter review, high-impact bullet rewriting, and tailored interview prep.
+              Generative AI evaluation providing executive recruiter review and high-impact bullet point rewriting.
             </p>
           </div>
 
@@ -194,36 +192,6 @@ export default function GeminiInsightsCard({ geminiInsights }) {
           </div>
         )}
 
-        {/* Tailored Interview Preparation Questions */}
-        {interviewPrepQuestions.length > 0 && (
-          <div className="space-y-3 pt-2">
-            <h4 className="text-xs font-bold text-[#4D4D4D] dark:text-white uppercase tracking-wide flex items-center gap-2">
-              <HelpCircle className="w-4 h-4 text-[#4CAF4F] dark:text-[#FFC72C]" />
-              <span>Tailored Technical & Behavioral Interview Preparation</span>
-            </h4>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {interviewPrepQuestions.map((q, qIdx) => (
-                <div
-                  key={qIdx}
-                  className="p-4 rounded-xl bg-[#F5F7FA] dark:bg-[#083d1c] border border-[#E4E7EB] dark:border-[#1e8247] space-y-2 flex flex-col justify-between"
-                >
-                  <div className="space-y-1.5">
-                    <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#E8F5E9] dark:bg-[#115e30] text-[#2E7D32] dark:text-[#FFC72C] border border-[#C8E6C9] dark:border-[#1e8247]">
-                      Question #{qIdx + 1}
-                    </span>
-                    <p className="text-xs font-bold text-[#263238] dark:text-white">
-                      {q.question}
-                    </p>
-                  </div>
-                  <div className="p-2 rounded-lg bg-white dark:bg-[#115e30] border border-[#E4E7EB] dark:border-[#1e8247] text-[11px] text-[#717171] dark:text-[#E8F5E9]">
-                    <strong className="text-[#4CAF4F] dark:text-[#FFC72C]">Target Focus:</strong> {q.idealAnswerFocus}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
       </div>
     </div>

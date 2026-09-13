@@ -48,7 +48,49 @@ export default function UploadAnalysisPanel({
   const [newSkillInput, setNewSkillInput] = useState('');
   const [selectedPresetIndex, setSelectedPresetIndex] = useState(0);
   const [fileError, setFileError] = useState(null);
+  const [textError, setTextError] = useState(null);
   const fileInputRef = useRef(null);
+
+  // ── Document-type signal detector ────────────────────────────────────────────
+  // Returns a human-readable error string if the text looks like a non-resume document,
+  // or null if it appears to be a valid resume/CV.
+  const detectNonResumeDocument = (text) => {
+    const lower = text.toLowerCase();
+
+    // Strong rejection signals — clearly non-resume content
+    const hardRejectPatterns = [
+      { pattern: /\b(invoice|bill\s*no\.?|billing\s+address|amount\s+due|payment\s+due|total\s+amount|gst\s+number|tax\s+invoice|receipt\s+no)\b/i, label: 'invoice or bill' },
+      { pattern: /\b(question\s+paper|exam\s+paper|answer\s+key|roll\s+no\.?|exam\s+instructions|time\s+allowed|maximum\s+marks|section\s+[a-z]:\s*(attempt|answer))\b/i, label: 'exam question paper' },
+      { pattern: /\b(chapter\s+\d+|table\s+of\s+contents|textbook|syllabus|lesson\s+plan|lecture\s+notes|assignment\s+no\.?|course\s+material|study\s+guide)\b/i, label: 'study material or textbook' },
+      { pattern: /\b(marksheet|mark\s+sheet|grade\s+card|result\s+card|semester\s+result|cgpa\s+details\s+by\s+subject|subject\s+code\s+.{0,20}marks\s+obtained)\b/i, label: 'marksheet or grade card' },
+      { pattern: /\b(newspaper|article\s+by|editorial|published\s+in|volume\s+\d+,?\s+issue\s+\d+|copyright\s+\d{4}\s+all\s+rights\s+reserved)\b/i, label: 'newspaper or article' },
+      { pattern: /\b(utility\s+bill|electricity\s+bill|water\s+bill|mobile\s+bill|meter\s+reading|units\s+consumed|customer\s+id\s*:)\b/i, label: 'utility bill' },
+      { pattern: /\b(bank\s+statement|account\s+summary|transaction\s+date|debit|credit|opening\s+balance|closing\s+balance|ifsc\s+code)\b/i, label: 'bank statement' },
+    ];
+
+    for (const { pattern, label } of hardRejectPatterns) {
+      if (pattern.test(text)) {
+        return `This document appears to be a ${label}, not a resume. Please upload your Resume or CV.`;
+      }
+    }
+
+    // Check for minimum resume-like signals in long enough text (>100 words)
+    const wordCount = text.match(/\S+/g)?.length || 0;
+    if (wordCount > 100) {
+      const hasResumeSection = /\b(experience|education|skills|projects|summary|objective|work\s+history|employment|qualifications)\b/i.test(text);
+      const hasContactOrIdentity = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(text)
+        || /\b(linkedin|github)\.com\b/i.test(text)
+        || /(?:\+?\d[\d\s().-]{8,}\d)/.test(text)
+        || /\b(resume|curriculum\s+vitae|cv)\b/i.test(text);
+      const hasCareerLanguage = /\b(developed|engineered|managed|designed|deployed|worked|built|led|implemented|responsible)\b/i.test(text);
+
+      if (!hasResumeSection && !hasContactOrIdentity && !hasCareerLanguage) {
+        return 'This document does not appear to be a Resume or CV. Please upload a document with sections like Experience, Skills, and Education.';
+      }
+    }
+
+    return null; // passes validation
+  };
 
   // File Dropzone Handler
   const handleFileChange = (e) => {
@@ -85,12 +127,23 @@ export default function UploadAnalysisPanel({
       return;
     }
 
-    setSelectedFile(file);
+    // For text files: read content and validate immediately
     if (file.type === 'text/plain' || fileExt === '.txt') {
       const reader = new FileReader();
-      reader.onload = (e) => setResumeText(e.target.result);
+      reader.onload = (evt) => {
+        const text = evt.target.result;
+        const docError = detectNonResumeDocument(text);
+        if (docError) {
+          setFileError(docError);
+          return;
+        }
+        setSelectedFile(file);
+        setResumeText(text);
+      };
       reader.readAsText(file);
     } else {
+      // PDF/DOCX: server will validate content via isLikelyResumeText
+      setSelectedFile(file);
       if (!resumeText) {
         setResumeText(`[Parsed from ${file.name}] Technical Profile and Experience`);
       }
@@ -137,11 +190,25 @@ export default function UploadAnalysisPanel({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setTextError(null);
     if (!selectedFile && !resumeText.trim()) {
       alert('Please upload a resume file (PDF/DOCX) or paste your resume text to begin analysis.');
       return;
     }
+    // Validate pasted text for non-resume content
+    if (!selectedFile && resumeText.trim()) {
+      const docError = detectNonResumeDocument(resumeText);
+      if (docError) {
+        setTextError(docError);
+        return;
+      }
+    }
     onAnalyze();
+  };
+
+  const handleResumeTextChange = (e) => {
+    setTextError(null);
+    setResumeText(e.target.value);
   };
 
   const handleReset = () => {
@@ -274,10 +341,20 @@ export default function UploadAnalysisPanel({
                   <textarea
                     rows={7}
                     value={resumeText}
-                    onChange={(e) => setResumeText(e.target.value)}
+                    onChange={handleResumeTextChange}
                     placeholder="Paste resume text including Education, Work Experience, Technical Skills, and Projects..."
-                    className="w-full rounded-xl p-3.5 text-xs font-mono resize-y border border-[#E4E7EB] dark:border-[#1e8247] focus:border-[#4CAF4F] dark:focus:border-[#FFC72C] bg-white dark:bg-[#083d1c] text-[#263238] dark:text-white"
+                    className={`w-full rounded-xl p-3.5 text-xs font-mono resize-y border focus:outline-none ${
+                      textError
+                        ? 'border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/10'
+                        : 'border-[#E4E7EB] dark:border-[#1e8247] focus:border-[#4CAF4F] dark:focus:border-[#FFC72C]'
+                    } bg-white dark:bg-[#083d1c] text-[#263238] dark:text-white`}
                   />
+                  {textError && (
+                    <div className="flex items-start gap-2 text-xs text-red-600 bg-red-50 dark:bg-red-900/20 p-2.5 rounded-lg border border-red-200 dark:border-red-800">
+                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>{textError}</span>
+                    </div>
+                  )}
                 </div>
               )}
 

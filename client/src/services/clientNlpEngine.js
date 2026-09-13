@@ -485,6 +485,7 @@ export function analyzeResumeClient(resumeText, targetRoleTitle, targetJobDesc, 
   };
 
   return {
+    resumeText: text,
     candidate: {
       name: candidateName,
       email: emailMatch ? emailMatch[1] : null,

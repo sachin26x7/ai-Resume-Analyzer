@@ -14,7 +14,6 @@ import {
   Loader2,
   Sparkles,
   Zap,
-  HelpCircle,
   TrendingUp,
   Compass
 } from 'lucide-react';
@@ -55,14 +54,16 @@ export default function AuditReportModal({ analysisResult, onClose }) {
 
   // Direct 1-Click High-DPI Full-Detail PDF Download
   const handleDownloadPdf = async () => {
-    if (!reportRef.current || isGeneratingPdf) return;
+    if (isGeneratingPdf) return;
     setIsGeneratingPdf(true);
     try {
       const safeName = candidateName.replace(/\s+/g, '_');
       const fileName = `ATS_Audit_Report_${safeName}.pdf`;
-      await downloadElementAsPdf(reportRef.current, fileName);
+      // Pass analysisResult so the programmatic PDF renderer can access all data
+      await downloadElementAsPdf(reportRef.current, fileName, analysisResult);
     } catch (err) {
       console.error('Download PDF error:', err);
+      alert('PDF generation failed. Try the Print button instead.');
     } finally {
       setIsGeneratingPdf(false);
     }
@@ -422,24 +423,6 @@ export default function AuditReportModal({ analysisResult, onClose }) {
             </div>
           )}
 
-          {/* 7. Tailored Technical & Behavioral Interview Prep */}
-          {geminiInsights?.interviewPrepQuestions?.length > 0 && (
-            <div className="space-y-2.5">
-              <h3 className="text-xs font-bold text-[#4D4D4D] dark:text-white uppercase tracking-wide flex items-center gap-1.5">
-                <HelpCircle className="w-4 h-4 text-[#4CAF4F] dark:text-[#FFC72C]" />
-                <span>Tailored Technical Interview Questions</span>
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                {geminiInsights.interviewPrepQuestions.slice(0, 2).map((q, idx) => (
-                  <div key={idx} className="p-3 rounded-xl bg-[#F5F7FA] dark:bg-[#115e30] border border-[#E4E7EB] dark:border-[#1e8247] space-y-1">
-                    <p className="font-bold text-[#263238] dark:text-white">Q{idx + 1}: {q.question}</p>
-                    <p className="text-[11px] text-[#717171] dark:text-[#E8F5E9]"><strong className="text-[#4CAF4F] dark:text-[#FFC72C]">Target Answer Focus:</strong> {q.idealAnswerFocus}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* 8. Top Recommended Career Trajectories */}
           {topRecs.length > 0 && (

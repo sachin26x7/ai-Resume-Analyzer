@@ -31,8 +31,12 @@ function generatePersonalizedFeedback(params) {
       priorityRank: 1,
       title: `Integrate ${missingSkills.length} Critical Target Skills`,
       impact: `+${scoreImpact}% potential ATS boost`,
-      description: `The job description emphasizes key competencies that are currently missing or formatted differently in your resume. Incorporate these into your Skills, Experience, or Project bullet points.`,
-      actionItems: topMissing.map(skill => `Add verified hands-on experience or coursework with: "${skill}"`),
+      description: `Your resume is missing ${missingSkills.length} key skills that recruiters and ATS systems are actively scanning for in ${jobTitle} roles. ATS platforms often auto-filter candidates whose resumes lack these exact keywords — even if you have the experience. Each missing skill can cost you a shortlist opportunity.`,
+      actionItems: [
+        ...topMissing.map(skill => `Add "${skill}" — include it in your Skills section and reinforce it with a bullet point showing where you applied it`),
+        `Scan the job description for exact phrasing (e.g., "REST APIs" vs "RESTful APIs") and mirror it precisely in your resume`,
+        `Prioritize skills that appear more than once in the JD — those are the non-negotiables for the role`
+      ],
       chips: topMissing
     });
   }
@@ -46,13 +50,14 @@ function generatePersonalizedFeedback(params) {
       category: 'Semantic Relevance',
       priority: 'HIGH',
       priorityRank: 2,
-      title: `Enhance Experience Descriptions with Contextual Impact`,
+      title: `Align Experience Language with ${jobTitle} Requirements`,
       impact: `+15-25% ATS semantic boost`,
-      description: `Your contextual similarity score (${atsResult.breakdown.semanticSimilarity.percentage}%) indicates your work descriptions use different phrasing from modern ${jobTitle} requirements. Align your experience using industry terminology, action verbs, and quantifiable metrics.`,
+      description: `Your contextual similarity score is ${atsResult.breakdown.semanticSimilarity.percentage}%, which means your resume's language doesn't closely mirror how modern ${jobTitle} job descriptions are written. Modern ATS systems use NLP to measure how well your experience narratives align — not just keyword counts. Generic descriptions like "worked on projects" score significantly lower than results-driven language.`,
       actionItems: [
-        'Use the XYZ Formula: "Accomplished [X], as measured by [Y], by doing [Z]"',
-        'Begin each bullet point with high-impact action verbs (e.g., Engineered, Architected, Automated, Optimized)',
-        'Quantify achievements with percentages, dollar amounts, scale (e.g., "Reduced latency by 35%", "Handled 10k+ daily users")'
+        `Apply the Google XYZ Formula to every bullet: "Accomplished [X] as measured by [Y] by doing [Z]" — e.g., "Reduced API latency by 40% by implementing Redis caching across 3 microservices"`,
+        `Replace weak openers (Responsible for, Helped, Worked on) with high-impact action verbs: Engineered, Architected, Automated, Optimized, Spearheaded, Deployed`,
+        `Quantify scale and impact in every bullet — include user counts, latency figures, team size, revenue impact, or deployment frequency`,
+        `Mirror the exact phrasing from the job description in your Experience section, especially in the first 2 bullets of each role`
       ]
     });
   }
@@ -73,8 +78,12 @@ function generatePersonalizedFeedback(params) {
         priorityRank: 3,
         title: `Add Standard Section Headers: ${missingSections.join(', ')}`,
         impact: `+${Math.round(atsResult.weights.GAMMA * (missingSections.length / 4) * 100)}% completeness boost`,
-        description: `ATS parsers rely on explicit headings to categorize your background accurately. Resumes with unrecognized sections can lead to automatic disqualification.`,
-        actionItems: missingSections.map(sec => `Create a dedicated "${sec}" section with standard header formatting`)
+        description: `ATS parsers categorize your background by scanning for standard section headings. Missing sections like "${missingSections.join('", "')}" can cause your resume to be parsed incorrectly — burying valuable experience or making it invisible to filters. Many ATS systems will outright reject resumes that fail section detection thresholds.`,
+        actionItems: [
+          ...missingSections.map(sec => `Add a clearly labelled "${sec}" section — use a standard heading in plain text (not inside a table, text box, or image)`),
+          `Ensure each section heading stands alone on its line and is not buried in a multi-column layout`,
+          `Order sections as: Summary → Skills → Experience → Projects → Education — this is the sequence most ATS and recruiters expect`
+        ]
       });
     }
   }
@@ -89,10 +98,12 @@ function generatePersonalizedFeedback(params) {
       priorityRank: 4,
       title: 'Convert Paragraph Text to Structured Bullet Points',
       impact: '+5-10% readability boost',
-      description: `Dense paragraphs reduce ATS parsing fidelity and human readability. Use 3 to 5 concise bullet points per role/project.`,
+      description: `Your resume contains dense paragraphs or fewer than 5 bullet points, which significantly reduces ATS parsing accuracy and recruiter engagement. Recruiters spend an average of 6–7 seconds scanning a resume — structured bullets allow them to immediately identify your impact. Dense paragraphs cause important skills and achievements to get buried and missed.`,
       actionItems: [
-        'Break multi-line paragraphs into distinct bullet points starting with symbols like • or -',
-        'Keep bullet points between 1 to 2 lines in length for maximum visual clarity'
+        `Convert each paragraph in your Experience section into 3–5 focused bullet points — one achievement or responsibility per bullet`,
+        `Start every bullet with a strong past-tense action verb (e.g., Built, Implemented, Reduced, Launched, Scaled)`,
+        `Keep each bullet to 1–2 lines — if it exceeds 2 lines, split it into two separate bullets`,
+        `Use standard bullet characters (• or -) that every ATS can parse — avoid checkmarks, arrows, or emoji`
       ]
     });
   }
@@ -104,12 +115,14 @@ function generatePersonalizedFeedback(params) {
       category: 'Impact Metrics',
       priority: 'MEDIUM',
       priorityRank: 5,
-      title: 'Include Concrete Numbers & Performance Metrics',
-      impact: '+10% human evaluator score correlation',
-      description: `Resumes with measurable results score 40% higher in recruiter and hiring manager evaluations.`,
+      title: 'Add Concrete Numbers & Performance Metrics to Every Role',
+      impact: '+10% human evaluator score',
+      description: `Your resume currently has no quantifiable metrics — no percentages, no scale figures, no time savings, no revenue numbers. Resumes with measurable results are rated 40% more positively by hiring managers. Metrics give recruiters confidence that your contributions had real business impact, not just activity. Without numbers, every bullet sounds like every other candidate's.`,
       actionItems: [
-        'Add quantitative figures: team size, latency reduction, throughput, user base, or cost savings',
-        'Example: "Optimized database queries, reducing API response time from 450ms to 120ms (73% improvement)"'
+        `For every experience bullet, add at least one number: team size, latency reduction %, cost saved, users served, or throughput improvement`,
+        `Example transformation: "Managed database performance" → "Optimized PostgreSQL query execution, reducing average response time from 850ms to 120ms (86% improvement)"`,
+        `Use before/after comparisons wherever possible to show delta impact (e.g., "Reduced deployment time from 45 min to 8 min")`,
+        `Even estimates are valuable — if exact numbers aren't available, use approximations: "~10k daily active users", "~30% faster build times"`
       ]
     });
   }
@@ -122,11 +135,14 @@ function generatePersonalizedFeedback(params) {
       category: 'Contact Info',
       priority: 'LOW',
       priorityRank: 6,
-      title: 'Verify Clear Contact Information Header',
+      title: 'Complete Your Contact Information Header',
       impact: 'Essential for recruiter outreach',
-      description: 'Ensure your Email, Phone Number, City/Country, LinkedIn, and GitHub links are placed at the very top in simple text.',
+      description: `Your resume is missing one or more critical contact fields (Email or Phone). A recruiter who wants to move fast cannot reach you if this information is absent or hidden in a graphic header. ATS systems also extract contact details from plain text — headers embedded in images or columns are frequently skipped entirely, making your application invisible.`,
       actionItems: [
-        'Avoid putting contact details in header/footer graphics or multi-column tables which some older ATS cannot read'
+        `Place your full name, email, phone number, city/country, LinkedIn URL, and GitHub profile at the very top of your resume in plain text`,
+        `Avoid placing contact details inside text boxes, images, or multi-column table headers — use a simple single-column layout for the header`,
+        `Use a professional email address (firstname.lastname@gmail.com) — avoid nicknames, numbers, or old university addresses`,
+        `Ensure your LinkedIn profile URL is customized (e.g., linkedin.com/in/yourname) and your profile is up to date`
       ]
     });
   }

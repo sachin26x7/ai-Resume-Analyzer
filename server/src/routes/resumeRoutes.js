@@ -14,37 +14,114 @@ const JobRole = require('../models/JobRole');
 const mongoose = require('mongoose');
 
 const router = express.Router();
+const MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
+const INVALID_DOCUMENT_MESSAGE = 'Invalid document. Please upload a Resume or CV.';
+const UNSUPPORTED_FILE_MESSAGE = 'Unsupported file type. Please upload a PDF resume.';
+const UNREADABLE_FILE_MESSAGE = 'Unable to read this file. Please upload a valid Resume or CV.';
 
 function isLikelyResumeText(text) {
-  const normalizedText = text.toLowerCase();
-  const sectionMatches = [
-    /\b(summary|profile|objective)\b/,
-    /\b(skills|technical skills|competencies|technologies)\b/,
-    /\b(experience|employment|work history|internship)\b/,
-    /\b(education|academic|qualification)\b/,
-    /\b(projects|certifications|achievements)\b/
-  ].filter(pattern => pattern.test(normalizedText)).length;
-  const hasContactDetails = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(text)
-    || /\b(linkedin|github)\.com\b/i.test(text)
-    || /(?:\+?\d[\d\s().-]{8,}\d)/.test(text);
-  const hasCareerLanguage = /\b(developed|engineered|managed|designed|deployed|worked|built|responsibilit(?:y|ies))\b/i.test(text);
+  if (!text || typeof text !== 'string') return false;
 
-  return sectionMatches >= 2 || (sectionMatches >= 1 && hasContactDetails && hasCareerLanguage);
+  const words = text.match(/\S+/g) || [];
+  // Too short to be a real resume
+  if (words.length < 20) return false;
+
+  // ── HARD REJECTION: clearly non-resume documents ─────────────────────────
+  // These patterns are unambiguous — a resume will never have these phrases.
+  const hardRejections = [
+    /\b(invoice|bill\s*no\.?|billing\s+address|amount\s+due|payment\s+due|total\s+amount|gst\s+number|tax\s+invoice|receipt\s+no\.?)\b/i,
+    /\b(electricity\s+bill|water\s+bill|mobile\s+bill|meter\s+reading|units\s+consumed|customer\s+id\s*:)\b/i,
+    /\b(bank\s+statement|account\s+summary|opening\s+balance|closing\s+balance|ifsc\s+code)\b/i,
+    /\b(question\s+paper|exam\s+paper|answer\s+key|exam\s+instructions|time\s+allowed\s*:|maximum\s+marks\s*:|attempt\s+all\s+questions)\b/i,
+    /\b(table\s+of\s+contents|chapter\s+\d+|textbook|lesson\s+plan|lecture\s+notes|course\s+material)\b/i,
+    /\b(marksheet|mark\s+sheet|grade\s+card|result\s+card|marks\s+obtained)\b/i,
+  ];
+
+  for (const pattern of hardRejections) {
+    if (pattern.test(text)) return false;
+  }
+
+  // ── RESUME POSITIVE SIGNALS ───────────────────────────────────────────────
+  // Use broad, non-anchored patterns — PDF text rarely has clean standalone headers.
+
+  const hasSectionHeader = [
+    /\b(summary|profile|objective|about\s+me)\b/i,
+    /\b(skills|technologies|tech\s+stack|competencies|expertise|proficiencies)\b/i,
+    /\b(experience|employment|work\s+history|career|internship|projects?)\b/i,
+    /\b(education|academic|qualification|degree|university|college)\b/i,
+    /\b(certifications?|achievements?|awards?|publications?|languages?)\b/i,
+  ].filter(p => p.test(text)).length;
+
+  const hasContact =
+    /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(text) ||
+    /\b(linkedin|github|gitlab|portfolio|leetcode)\.com\b/i.test(text) ||
+    /(?:\+?\d[\d\s().-]{7,}\d)/.test(text);
+
+  const hasCareerLang =
+    /\b(developed|engineered|designed|deployed|built|led|managed|implemented|created|maintained|optimized|collaborated|contributed|worked)\b/i.test(text);
+
+  const hasEducationLang =
+    /\b(bachelor|master|b\.?tech|m\.?tech|b\.?e|m\.?e|b\.?sc|m\.?sc|phd|diploma|cgpa|gpa|percentage|graduated)\b/i.test(text);
+
+  const hasResumeIdentity =
+    /\b(resume|curriculum\s+vitae|cv)\b/i.test(text);
+
+  // Accept if the document has ANY combination of resume signals.
+  // Even a short resume with just skills + contact should pass.
+  const positiveSignals = [
+    hasSectionHeader >= 1,
+    hasContact,
+    hasCareerLang,
+    hasEducationLang,
+    hasResumeIdentity,
+  ].filter(Boolean).length;
+
+  // Needs at least 2 positive signals to be considered a resume
+  return positiveSignals >= 2;
+}
+
+
+
+function hasPdfSignature(buffer) {
+  return Buffer.isBuffer(buffer)
+    && buffer.length >= 5
+    && buffer.subarray(0, 5).toString('ascii') === '%PDF-';
+}
+
+function sendUploadError(res, status, message) {
+  return res.status(status).json({ success: false, message, error: message });
 }
 
 // Configure Multer for in-memory PDF uploads (Render & cloud friendly)
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB max
+  limits: { fileSize: MAX_UPLOAD_SIZE },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'application/pdf' || file.originalname.toLowerCase().endsWith('.pdf') || file.mimetype === 'text/plain') {
+    const extension = file.originalname.toLowerCase().slice(file.originalname.lastIndexOf('.'));
+    if (extension === '.pdf' || file.mimetype === 'application/pdf') {
       cb(null, true);
     } else {
-      cb(new Error('Only PDF and Plain Text files are supported!'), false);
+      const error = new Error(UNSUPPORTED_FILE_MESSAGE);
+      error.status = 415;
+      error.code = 'UNSUPPORTED_FILE_TYPE';
+      cb(error, false);
     }
   }
 });
+
+function handleUpload(req, res, next) {
+  upload.single('resumeFile')(req, res, error => {
+    if (!error) return next();
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return sendUploadError(res, 413, 'File is too large. Please upload a Resume or CV under 10MB.');
+    }
+    if (error.code === 'UNSUPPORTED_FILE_TYPE') {
+      return sendUploadError(res, error.status, UNSUPPORTED_FILE_MESSAGE);
+    }
+    return sendUploadError(res, 422, UNREADABLE_FILE_MESSAGE);
+  });
+}
 
 /**
  * In-memory fallback cache if MongoDB is not connected
@@ -55,38 +132,33 @@ let inMemoryHistory = [];
  * POST /api/resume/analyze
  * Comprehensive Resume Analysis, ATS Scoring, Feedback & Career Recommendations
  */
-router.post('/analyze', upload.single('resumeFile'), async (req, res) => {
+router.post('/analyze', handleUpload, async (req, res) => {
   try {
     let resumeText = (req.body.resumeText || '').trim();
     const targetJobTitle = req.body.targetJobTitle || 'Full Stack Software Engineer';
 
-    // If PDF file was uploaded, extract text using pdf-parse.
     if (req.file) {
+      const extension = req.file.originalname.toLowerCase().slice(req.file.originalname.lastIndexOf('.'));
+      if (extension !== '.pdf' || !hasPdfSignature(req.file.buffer)) {
+        return sendUploadError(res, 422, UNREADABLE_FILE_MESSAGE);
+      }
+
       try {
-        if (req.file.mimetype === 'application/pdf' || (req.file.originalname && req.file.originalname.toLowerCase().endsWith('.pdf'))) {
-          const pdfData = await pdfParse(req.file.buffer);
-          if (pdfData && pdfData.text && pdfData.text.trim().length > 0) {
-            resumeText = pdfData.text.trim();
-          }
-        } else {
-          const rawFileText = req.file.buffer.toString('utf-8');
-          if (rawFileText && rawFileText.trim().length > 0) {
-            resumeText = rawFileText.trim();
-          }
+        const pdfData = await pdfParse(req.file.buffer);
+        if (pdfData && pdfData.text && pdfData.text.trim().length > 0) {
+          resumeText = pdfData.text.trim();
         }
       } catch (pdfErr) {
-        return res.status(422).json({
-          success: false,
-          error: 'Please upload a valid resume or CV PDF with selectable text.'
-        });
+        return sendUploadError(res, 422, UNREADABLE_FILE_MESSAGE);
       }
     }
 
-    if (!resumeText || resumeText.length < 5 || (req.file && !isLikelyResumeText(resumeText))) {
-      return res.status(422).json({
-        success: false,
-        error: 'Please upload a valid resume or CV PDF. The uploaded document does not look like a resume.'
-      });
+    if (!resumeText || resumeText.trim().length < 5) {
+      return sendUploadError(res, 422, UNREADABLE_FILE_MESSAGE);
+    }
+
+    if (req.file && !isLikelyResumeText(resumeText)) {
+      return sendUploadError(res, 422, INVALID_DOCUMENT_MESSAGE);
     }
     let targetJobDescription = req.body.targetJobDescription || '';
     let jobRequiredSkills = [];
@@ -180,6 +252,7 @@ router.post('/analyze', upload.single('resumeFile'), async (req, res) => {
 
     const payload = {
       success: true,
+      resumeText: resumeText.slice(0, 15000),
       analysisId: 'res_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
       candidate: resumeParsed.metadata,
       targetJob: {
@@ -208,29 +281,37 @@ router.post('/analyze', upload.single('resumeFile'), async (req, res) => {
       timestamp: new Date().toISOString()
     };
 
-    // Save only candidate details to MongoDB
+    // Save FULL analysis payload to MongoDB
     try {
       if (mongoose.connection.readyState === 1) {
         const candidate = resumeParsed.metadata;
-        // Only save if we have at least a name or email
-        if (candidate && (candidate.name || candidate.email)) {
-          await CandidateProfile.create({
-            name: candidate.name || null,
-            email: candidate.email || null,
-            phone: candidate.phone || null,
-            linkedin: candidate.linkedin || null,
-            github: candidate.github || null,
-            targetJobTitle: targetJobTitle || null,
-            atsScore: atsScoreResult.percentage || null
-          });
-          console.log(`💾 Saved candidate profile to MongoDB: ${candidate.name || candidate.email}`);
-        }
+        await CandidateProfile.create({
+          analysisId: payload.analysisId,
+          name: candidate.name || null,
+          email: candidate.email || null,
+          phone: candidate.phone || null,
+          linkedin: candidate.linkedin || null,
+          github: candidate.github || null,
+          targetJobTitle: targetJobTitle || null,
+          targetJob: payload.targetJob,
+          atsScore: atsScoreResult,
+          skillGap: payload.skillGap,
+          extractedSkills: resumeParsed.extractedSkills,
+          extractedSkillNames: resumeParsed.extractedSkillNames,
+          resumeFeatures: payload.resumeFeatures,
+          feedback: personalizedFeedback,
+          careerRecommendations,
+          geminiInsights,
+          preferences: preferences || null,
+          resumeText: resumeText.slice(0, 15000) // cap to avoid doc size limit
+        });
+        console.log(`💾 Saved full analysis to MongoDB: ${candidate.name || candidate.email || payload.analysisId}`);
       }
     } catch (dbErr) {
       console.warn('MongoDB save note:', dbErr.message);
     }
 
-    // Always maintain in-memory history cache as well
+    // In-memory fallback cache (used when MongoDB is offline)
     inMemoryHistory.unshift(payload);
     if (inMemoryHistory.length > 50) inMemoryHistory.pop();
 
@@ -270,14 +351,46 @@ router.get('/roles', async (req, res) => {
 
 /**
  * GET /api/resume/history
- * Returns recent analysis entries from MongoDB database or memory cache
+ * Returns full analysis records from MongoDB (or in-memory fallback)
  */
 router.get('/history', async (req, res) => {
   try {
     if (mongoose.connection.readyState === 1) {
-      const records = await CandidateProfile.find().sort({ createdAt: -1 }).limit(30);
-      return res.json({ success: true, history: records, source: 'mongodb' });
+      const records = await CandidateProfile.find()
+        .sort({ createdAt: -1 })
+        .limit(50)
+        .lean(); // plain JS objects, faster
+
+      // Normalize each record into the same shape the frontend expects
+      const normalized = records.map(r => ({
+        _id: r._id,
+        analysisId: r.analysisId || r._id.toString(),
+        success: true,
+        candidate: {
+          name: r.name,
+          email: r.email,
+          phone: r.phone,
+          linkedin: r.linkedin,
+          github: r.github
+        },
+        targetJob: r.targetJob || { title: r.targetJobTitle || 'Software Engineer', requiredSkills: [] },
+        atsScore: r.atsScore || { percentage: 0, tier: 'N/A' },
+        skillGap: r.skillGap || { matchedSkills: [], missingSkills: [], matchedCount: 0, missingCount: 0 },
+        extractedSkills: r.extractedSkills || [],
+        extractedSkillNames: r.extractedSkillNames || [],
+        resumeFeatures: r.resumeFeatures || {},
+        feedback: r.feedback || [],
+        careerRecommendations: r.careerRecommendations || null,
+        geminiInsights: r.geminiInsights || null,
+        preferences: r.preferences || {},
+        resumeText: r.resumeText || '',
+        timestamp: r.createdAt,
+        createdAt: r.createdAt
+      }));
+
+      return res.json({ success: true, history: normalized, source: 'mongodb' });
     }
+    // Fallback to in-memory if MongoDB is offline
     return res.json({ success: true, history: inMemoryHistory, source: 'in-memory' });
   } catch (error) {
     return res.json({ success: true, history: inMemoryHistory, source: 'in-memory' });
@@ -286,16 +399,22 @@ router.get('/history', async (req, res) => {
 
 /**
  * DELETE /api/resume/history/:id
- * Deletes a single analysis history entry from MongoDB
+ * Deletes a single analysis history entry by _id or analysisId
  */
 router.delete('/history/:id', async (req, res) => {
   try {
     const { id } = req.params;
     if (mongoose.connection.readyState === 1) {
-      await CandidateProfile.deleteOne({ _id: id });
+      // Try deleting by MongoDB _id first, then by analysisId field
+      const byId = await CandidateProfile.deleteOne({ _id: id }).catch(() => ({ deletedCount: 0 }));
+      if (byId.deletedCount === 0) {
+        await CandidateProfile.deleteOne({ analysisId: id }).catch(() => {});
+      }
     }
-    inMemoryHistory = inMemoryHistory.filter(h => (h._id && h._id.toString() !== id) && h.analysisId !== id);
-    return res.json({ success: true, message: 'History record deleted successfully from MongoDB' });
+    inMemoryHistory = inMemoryHistory.filter(h =>
+      (h._id && h._id.toString() !== id) && h.analysisId !== id
+    );
+    return res.json({ success: true, message: 'History record deleted.' });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
   }
@@ -311,7 +430,7 @@ router.delete('/history', async (req, res) => {
       await CandidateProfile.deleteMany({});
     }
     inMemoryHistory = [];
-    return res.json({ success: true, message: 'All history records cleared from MongoDB' });
+    return res.json({ success: true, message: 'All history records cleared.' });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
   }

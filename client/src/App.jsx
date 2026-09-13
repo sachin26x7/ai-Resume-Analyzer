@@ -7,6 +7,7 @@ import GeminiInsightsCard from './components/GeminiInsightsCard';
 import SkillMatrix from './components/SkillMatrix';
 import PersonalizedFeedbackDeck from './components/PersonalizedFeedbackDeck';
 import CareerRecommendationsDeck from './components/CareerRecommendationsDeck';
+import ProjectRecommendationsCard from './components/ProjectRecommendationsCard';
 
 import AuditReportModal from './components/AuditReportModal';
 import HistoryModal from './components/HistoryModal';
@@ -33,30 +34,32 @@ export default function App() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   // Analyze Resume Function
-  const handleAnalyze = async () => {
+  const handleAnalyze = async (resumeTextOverride = null, forceTextAnalysis = false) => {
     setIsAnalyzing(true);
     setAnalysisError(null);
+    const textToAnalyze = resumeTextOverride ?? resumeText;
     try {
       let result;
-      if (selectedFile) {
+      if (selectedFile && !forceTextAnalysis) {
         try {
-          result = await analyzeResumeFileApi(selectedFile, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences, resumeText);
+          result = await analyzeResumeFileApi(selectedFile, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences, textToAnalyze);
         } catch (err) {
           if (err.isApiError) throw err;
           console.warn('Backend server unreachable, running client NLP fallback...');
-          result = analyzeResumeClient(resumeText, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences);
+          result = analyzeResumeClient(textToAnalyze, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences);
         }
       } else {
         try {
-          result = await analyzeResumeApi(resumeText, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences);
+          result = await analyzeResumeApi(textToAnalyze, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences);
         } catch (err) {
           if (err.isApiError) throw err;
           console.warn('Backend server unreachable, running client NLP fallback...');
-          result = analyzeResumeClient(resumeText, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences);
+          result = analyzeResumeClient(textToAnalyze, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences);
         }
       }
 
       setAnalysisResult(result);
+      if (result.resumeText) setResumeText(result.resumeText);
       setTimeout(() => {
         document.getElementById('results-section')?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
@@ -66,6 +69,26 @@ export default function App() {
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const handleAddProject = async (project) => {
+    const currentResumeText = analysisResult?.resumeText || resumeText;
+    const projectTitle = (project.title || '').trim();
+    if (!projectTitle || currentResumeText.toLowerCase().includes(projectTitle.toLowerCase())) return;
+
+    const projectEntry = [
+      '',
+      'PROJECTS',
+      projectTitle,
+      project.description,
+      `Technologies: ${(project.techStack || []).join(', ')}`,
+      `Keywords: ${(project.githubKeywords || []).join(', ')}`
+    ].filter(Boolean).join('\n');
+    const updatedResumeText = `${currentResumeText.trim()}\n${projectEntry}`;
+
+    setSelectedFile(null);
+    setResumeText(updatedResumeText);
+    await handleAnalyze(updatedResumeText, true);
   };
 
   const handleApplyOptimized = (newResult, newText) => {
@@ -151,11 +174,18 @@ export default function App() {
               onOpenAuditModal={() => setShowAuditModal(true)}
             />
 
-            {/* 2. Gemini AI Deep Analysis */}
+            {/* 2. Gemini AI Deep Analysis + Project Recommendations */}
             {analysisResult.geminiInsights && (
-              <GeminiInsightsCard
-                geminiInsights={analysisResult.geminiInsights}
-              />
+              <>
+                <GeminiInsightsCard
+                  geminiInsights={analysisResult.geminiInsights}
+                />
+                <ProjectRecommendationsCard
+                  geminiInsights={analysisResult.geminiInsights}
+                  targetJobTitle={targetJobTitle}
+                  onAddProject={handleAddProject}
+                />
+              </>
             )}
 
             {/* 3. Skill Matrix */}

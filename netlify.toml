@@ -3,6 +3,12 @@
   command = "npm ci && npm run build"
   publish = "dist"
 
+[build.environment]
+  # Tells Vite which backend to call in production builds.
+  # Override this in Netlify Dashboard → Site Settings → Environment Variables
+  # if your Render backend URL changes.
+  VITE_API_URL = "https://ai-resume-analyzer-olha.onrender.com"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

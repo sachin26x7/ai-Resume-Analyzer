@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  Briefcase, 
   MapPin, 
   DollarSign, 
   Calendar, 
@@ -14,9 +13,8 @@ import {
   Clock, 
   Star, 
   Flame, 
-  Compass 
 } from 'lucide-react';
-import { INDIAN_TECH_HUBS, generateLiveJobs } from '../services/liveJobsService';
+import { generateLiveJobs } from '../services/liveJobsService';
 
 const LOCATION_OPTIONS = [
   'All Locations',
@@ -57,17 +55,8 @@ export default function CareerRecommendationsDeck({
 
   // Extract properties safely
   const effectiveTargetTitle = targetJobTitle || analysisResult?.targetJob?.title || 'Full Stack Software Engineer';
-  const effectiveLocation = userLocation || analysisResult?.preferences?.preferredLocation || 'Bengaluru';
   const effectiveSkills = analysisResult?.extractedSkills || [];
   
-  const recsList = recommendations || 
-    analysisResult?.careerRecommendations?.top5 || 
-    (Array.isArray(analysisResult?.careerRecommendations) ? analysisResult.careerRecommendations : []);
-  const top1Role = recsList && recsList.length > 0 ? recsList[0] : null;
-
-  // Safe hub lookup (INDIAN_TECH_HUBS is an Object)
-  const currentCityHub = INDIAN_TECH_HUBS[effectiveLocation] || INDIAN_TECH_HUBS["Bengaluru"] || { hubName: "Major Indian Tech Hub" };
-
   // Fallback generation for live tech jobs if not supplied
   const baseJobs = (liveJobs && liveJobs.length > 0)
     ? liveJobs
@@ -132,84 +121,6 @@ export default function CareerRecommendationsDeck({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-5">
       
-      {/* SECTION HEADER & CONTEXT CALLOUT */}
-      <div className="bg-white dark:bg-[#143524] p-5 sm:p-6 rounded-xl space-y-4 border border-[#E4E7EB] dark:border-[#2d5b3e] shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E4E7EB] dark:border-[#1e8247] pb-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-lg bg-[#4CAF4F] dark:bg-[#FAB818] flex items-center justify-center text-white dark:text-[#083d1c] shadow-sm font-black">
-                <Briefcase className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-[#4D4D4D] dark:text-white flex items-center gap-2">
-                  <span>Indian Tech Hub Job & Internship Openings</span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#E8F5E9] dark:bg-[#083d1c] text-[#2E7D32] dark:text-[#FFC72C] border border-[#C8E6C9] dark:border-[#1e8247]">
-                    LIVE
-                  </span>
-                </h3>
-              </div>
-            </div>
-            <p className="text-xs text-[#717171] dark:text-[#E8F5E9]">
-              Openings matched to <strong className="text-[#4CAF4F] dark:text-[#FFC72C]">{effectiveTargetTitle}</strong> across verified companies in <strong className="text-[#263238] dark:text-white">{selectedLocation}</strong>.
-            </p>
-          </div>
-
-          {/* Type Tabs */}
-          <div className="flex p-1 rounded-lg bg-[#F5F7FA] dark:bg-[#10281b] border border-[#E4E7EB] dark:border-[#2d5b3e] text-xs font-bold self-start md:self-auto">
-            <button
-              onClick={() => setSelectedType('all')}
-              className={`px-3.5 py-1.5 rounded-md transition-all font-bold ${
-                selectedType === 'all'
-                  ? 'bg-[#4CAF4F] dark:bg-[#FAB818] text-white dark:text-[#083d1c] shadow-xs'
-                  : 'text-[#717171] dark:text-white hover:text-[#4D4D4D] dark:hover:text-[#FFC72C]'
-              }`}
-            >
-              All ({filteredJobs.length})
-            </button>
-            <button
-              onClick={() => setSelectedType('internship')}
-              className={`px-3.5 py-1.5 rounded-md transition-all font-bold ${
-                selectedType === 'internship'
-                  ? 'bg-[#4CAF4F] dark:bg-[#FAB818] text-white dark:text-[#083d1c] shadow-xs'
-                  : 'text-[#717171] dark:text-white hover:text-[#4D4D4D] dark:hover:text-[#FFC72C]'
-              }`}
-            >
-              Internships
-            </button>
-            <button
-              onClick={() => setSelectedType('fulltime')}
-              className={`px-3.5 py-1.5 rounded-md transition-all font-bold ${
-                selectedType === 'fulltime'
-                  ? 'bg-[#4CAF4F] dark:bg-[#FAB818] text-white dark:text-[#083d1c] shadow-xs'
-                  : 'text-[#717171] dark:text-white hover:text-[#4D4D4D] dark:hover:text-[#FFC72C]'
-              }`}
-            >
-              Full-Time
-            </button>
-          </div>
-        </div>
-
-        {/* Dynamic Candidate Context Banner */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {top1Role && (
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-[#F5F7FA] dark:bg-[#10281b] border border-[#E4E7EB] dark:border-[#2d5b3e] text-xs">
-              <Compass className="w-4 h-4 text-[#4CAF4F] dark:text-[#FFC72C] shrink-0" />
-              <span className="text-[#717171] dark:text-[#E8F5E9]">
-                Top Fit: <strong className="text-[#263238] dark:text-[#FFC72C]">{top1Role.title}</strong> ({top1Role.matchPercentage || Math.round((top1Role.similarity || 0.8) * 100)}% fit)
-              </span>
-            </div>
-          )}
-          {currentCityHub && (
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-[#F5F7FA] dark:bg-[#10281b] border border-[#E4E7EB] dark:border-[#2d5b3e] text-xs">
-              <MapPin className="w-4 h-4 text-[#4CAF4F] dark:text-[#FFC72C] shrink-0" />
-              <span className="text-[#717171] dark:text-[#E8F5E9] truncate">
-                Tech Hub: <strong className="text-[#263238] dark:text-white">{currentCityHub.hubName}</strong>
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* FILTER & SEARCH BAR */}
       <div className="bg-white dark:bg-[#143524] p-4 rounded-xl space-y-3.5 border border-[#E4E7EB] dark:border-[#2d5b3e] shadow-xs">
         <div className="flex flex-col sm:flex-row items-center gap-3">

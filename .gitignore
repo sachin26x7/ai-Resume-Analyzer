@@ -1,9 +1,15 @@
 **/node_modules/
 **/dist/
+
+# Local secrets — never commit these
 **/.env
 **/.env.local
 **/.env.*.local
+
+# .env.production and .env.example are safe to commit
+!**/.env.production
 !**/.env.example
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

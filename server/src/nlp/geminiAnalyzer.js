@@ -62,14 +62,33 @@ Provide your expert evaluation in strictly valid JSON format with the following 
       "reason": "Why this improves market alignment"
     }
   ],
-  "interviewPrepQuestions": [
+  "projectRecommendations": [
     {
-      "question": "A targeted technical/system design question based on their resume claims",
-      "idealAnswerFocus": "Key technologies, metrics, and architecture points the candidate should mention"
+      "title": "Project title directly relevant to ${targetJobTitle}",
+      "description": "2-sentence description of what to build and its real-world purpose",
+      "techStack": ["Primary tech 1", "Tech 2", "Tech 3", "Tech 4"],
+      "difficulty": "Beginner | Intermediate | Advanced",
+      "estimatedTime": "e.g. 2-3 weeks",
+      "whyItMatters": "1 sentence explaining why this project impresses recruiters for ${targetJobTitle} roles",
+      "githubKeywords": ["keyword1", "keyword2", "keyword3"]
     },
     {
-      "question": "A behavioral/problem-solving question based on their experience",
-      "idealAnswerFocus": "STAR method focus points (Situation, Task, Action, Result)"
+      "title": "Second project idea",
+      "description": "Description of the project",
+      "techStack": ["Tech 1", "Tech 2", "Tech 3"],
+      "difficulty": "Intermediate",
+      "estimatedTime": "3-4 weeks",
+      "whyItMatters": "Why recruiters care about this project",
+      "githubKeywords": ["keyword1", "keyword2"]
+    },
+    {
+      "title": "Third project idea — advanced portfolio piece",
+      "description": "Description of a more complex project",
+      "techStack": ["Tech 1", "Tech 2", "Tech 3", "Tech 4"],
+      "difficulty": "Advanced",
+      "estimatedTime": "4-6 weeks",
+      "whyItMatters": "Why this demonstrates senior-level capability",
+      "githubKeywords": ["keyword1", "keyword2", "keyword3"]
     }
   ]
 }`;
@@ -122,6 +141,49 @@ function generateSynthesizedInsights({ resumeText, targetJobTitle, atsScore = 75
   else if (atsScore >= 70) verdict = 'Strong Contender';
   else if (atsScore < 50) verdict = 'Needs Targeted Revisions';
 
+  // Generate job-role-aware project recommendations
+  const title = (targetJobTitle || '').toLowerCase();
+  let projectRecommendations = [];
+
+  if (title.includes('frontend') || title.includes('react') || title.includes('ui')) {
+    projectRecommendations = [
+      { title: 'Real-Time Dashboard with React & WebSockets', description: 'Build a live analytics dashboard that streams real-time data using WebSockets and renders interactive charts. Demonstrates advanced React state management and performance optimization.', techStack: ['React.js', 'TypeScript', 'WebSockets', 'Recharts', 'TailwindCSS'], difficulty: 'Intermediate', estimatedTime: '2-3 weeks', whyItMatters: 'Recruiters for frontend roles value real-time UI skills and complex state management.', githubKeywords: ['react-dashboard', 'websockets', 'real-time-charts'] },
+      { title: 'Accessible Component Library', description: 'Create a production-grade React component library with full WCAG 2.1 accessibility, Storybook documentation, and npm publish. Shows engineering discipline beyond just building UIs.', techStack: ['React.js', 'TypeScript', 'Storybook', 'Jest', 'Rollup'], difficulty: 'Advanced', estimatedTime: '3-4 weeks', whyItMatters: 'Demonstrates senior-level thinking: reusability, accessibility, and open-source contribution.', githubKeywords: ['react-component-library', 'storybook', 'accessibility'] },
+      { title: 'E-commerce Product Page with Animations', description: 'Design a pixel-perfect, animated product page with cart functionality, micro-interactions, and responsive layout. Showcases CSS mastery and UX polish.', techStack: ['React.js', 'Framer Motion', 'CSS Modules', 'Zustand'], difficulty: 'Beginner', estimatedTime: '1-2 weeks', whyItMatters: 'UI polish and animation fluency are key differentiators for frontend candidates.', githubKeywords: ['react-ecommerce', 'framer-motion', 'animations'] }
+    ];
+  } else if (title.includes('backend') || title.includes('node') || title.includes('api')) {
+    projectRecommendations = [
+      { title: 'Scalable REST API with Rate Limiting & Auth', description: 'Build a Node.js/Express API with JWT authentication, Redis-based rate limiting, API versioning, and Swagger docs. Simulates production-grade backend architecture.', techStack: ['Node.js', 'Express.js', 'MongoDB', 'Redis', 'JWT', 'Swagger'], difficulty: 'Intermediate', estimatedTime: '2-3 weeks', whyItMatters: 'Backend roles demand knowledge of security, scalability, and API design best practices.', githubKeywords: ['nodejs-api', 'jwt-auth', 'rate-limiting'] },
+      { title: 'Microservices with Message Queue', description: 'Design 3 independent microservices that communicate via RabbitMQ or Kafka, with Docker Compose orchestration. Shows understanding of distributed systems.', techStack: ['Node.js', 'RabbitMQ', 'Docker', 'MongoDB', 'Express.js'], difficulty: 'Advanced', estimatedTime: '4-5 weeks', whyItMatters: 'Senior backend engineers are expected to understand async communication and service decoupling.', githubKeywords: ['microservices', 'rabbitmq', 'docker-compose'] },
+      { title: 'GraphQL API with Subscriptions', description: 'Implement a GraphQL server with queries, mutations, and real-time subscriptions using Apollo Server. Include caching and DataLoader for N+1 prevention.', techStack: ['Node.js', 'Apollo Server', 'GraphQL', 'PostgreSQL', 'DataLoader'], difficulty: 'Intermediate', estimatedTime: '2-3 weeks', whyItMatters: 'GraphQL expertise is increasingly demanded by product companies over REST.', githubKeywords: ['graphql-api', 'apollo-server', 'subscriptions'] }
+    ];
+  } else if (title.includes('full stack') || title.includes('mern') || title.includes('mean')) {
+    projectRecommendations = [
+      { title: 'Full-Stack SaaS Dashboard with Auth & Billing', description: 'Build a multi-tenant SaaS app with user authentication, role-based permissions, Stripe billing integration, and an analytics dashboard.', techStack: ['React.js', 'Node.js', 'MongoDB', 'Stripe API', 'JWT', 'TailwindCSS'], difficulty: 'Advanced', estimatedTime: '4-6 weeks', whyItMatters: 'Full-stack SaaS projects demonstrate end-to-end product thinking, which is exactly what MERN employers want.', githubKeywords: ['saas-dashboard', 'stripe-integration', 'mern-stack'] },
+      { title: 'Real-Time Chat Application', description: 'Create a WhatsApp-like chat app with rooms, typing indicators, read receipts, and file sharing using Socket.io and React.', techStack: ['React.js', 'Node.js', 'Socket.io', 'MongoDB', 'Express.js'], difficulty: 'Intermediate', estimatedTime: '2-3 weeks', whyItMatters: 'Real-time features (WebSockets) are a core competency tested in MERN interviews.', githubKeywords: ['chat-app', 'socketio', 'real-time'] },
+      { title: 'AI-Powered Task Manager', description: 'A full-stack project management tool with AI task prioritization (using OpenAI/Gemini API), drag-and-drop Kanban board, and team collaboration.', techStack: ['React.js', 'Node.js', 'MongoDB', 'OpenAI API', 'React DnD'], difficulty: 'Advanced', estimatedTime: '3-4 weeks', whyItMatters: 'AI integration in full-stack projects is a major differentiator in 2024 job markets.', githubKeywords: ['ai-task-manager', 'kanban', 'openai-integration'] }
+    ];
+  } else if (title.includes('data') || title.includes('ml') || title.includes('python') || title.includes('machine learning')) {
+    projectRecommendations = [
+      { title: 'ML-Powered Resume Screener', description: 'Train a classification model to score resumes against job descriptions using NLP techniques like TF-IDF and BERT embeddings. Deploy as a REST API.', techStack: ['Python', 'scikit-learn', 'FastAPI', 'Hugging Face', 'pandas'], difficulty: 'Intermediate', estimatedTime: '3-4 weeks', whyItMatters: 'NLP and model deployment skills are core requirements for ML engineering roles.', githubKeywords: ['resume-screener', 'nlp', 'bert-embeddings'] },
+      { title: 'Time Series Sales Forecasting Dashboard', description: 'Build an end-to-end data pipeline that ingests sales data, trains an ARIMA/LSTM model, and visualizes forecasts in a Streamlit dashboard.', techStack: ['Python', 'Pandas', 'TensorFlow', 'Streamlit', 'Plotly'], difficulty: 'Advanced', estimatedTime: '4-5 weeks', whyItMatters: 'Forecasting is one of the most commercially valuable ML use cases — highly visible to data science recruiters.', githubKeywords: ['time-series', 'lstm-forecasting', 'streamlit'] },
+      { title: 'Data Pipeline with Apache Airflow', description: 'Design an ETL pipeline using Airflow DAGs that pulls API data, transforms it with pandas, and loads into a PostgreSQL data warehouse.', techStack: ['Python', 'Apache Airflow', 'PostgreSQL', 'pandas', 'Docker'], difficulty: 'Intermediate', estimatedTime: '2-3 weeks', whyItMatters: 'Pipeline orchestration skills are essential for data engineering and analytics engineering roles.', githubKeywords: ['airflow-pipeline', 'etl', 'data-warehouse'] }
+    ];
+  } else if (title.includes('devops') || title.includes('cloud') || title.includes('sre')) {
+    projectRecommendations = [
+      { title: 'Kubernetes Auto-Scaling Microservices', description: 'Deploy a multi-container app on Kubernetes with HPA (Horizontal Pod Autoscaler), Ingress controllers, and Helm charts. Simulate production traffic with load testing.', techStack: ['Kubernetes', 'Docker', 'Helm', 'Prometheus', 'k6'], difficulty: 'Advanced', estimatedTime: '4-5 weeks', whyItMatters: 'Kubernetes orchestration is the #1 skill DevOps employers test in technical interviews.', githubKeywords: ['kubernetes', 'helm-charts', 'autoscaling'] },
+      { title: 'CI/CD Pipeline with GitHub Actions', description: 'Build a complete CI/CD pipeline: automated testing, Docker build, push to ECR, and blue/green deployment to AWS ECS. Include Slack notifications.', techStack: ['GitHub Actions', 'Docker', 'AWS ECS', 'Terraform', 'Jest'], difficulty: 'Intermediate', estimatedTime: '2-3 weeks', whyItMatters: 'CI/CD automation is a core expectation for every DevOps and platform engineering role.', githubKeywords: ['github-actions', 'cicd-pipeline', 'aws-ecs'] },
+      { title: 'Infrastructure as Code with Terraform', description: 'Provision a complete AWS VPC, EC2, RDS, and S3 architecture using Terraform modules with remote state management and environment separation.', techStack: ['Terraform', 'AWS', 'S3', 'RDS', 'EC2'], difficulty: 'Intermediate', estimatedTime: '2-3 weeks', whyItMatters: 'IaC expertise is one of the highest-demand DevOps skills with direct salary impact.', githubKeywords: ['terraform', 'infrastructure-as-code', 'aws-vpc'] }
+    ];
+  } else {
+    // Generic software engineering projects
+    projectRecommendations = [
+      { title: `${targetJobTitle} Portfolio Project`, description: `Build a production-ready project demonstrating core ${targetJobTitle} competencies including ${topMatched}. Focus on clean architecture, testing, and documentation.`, techStack: matchedSkills.slice(0, 4).length > 0 ? matchedSkills.slice(0, 4) : ['JavaScript', 'Node.js', 'React.js', 'MongoDB'], difficulty: 'Intermediate', estimatedTime: '2-3 weeks', whyItMatters: `Directly showcases the exact skills recruiters need for ${targetJobTitle} positions.`, githubKeywords: ['portfolio-project', 'full-stack', 'clean-architecture'] },
+      { title: 'Open Source Contribution', description: `Contribute to an established open source project related to ${topMatched}. Even small contributions (bug fixes, docs, tests) signal collaboration and code quality skills.`, techStack: matchedSkills.slice(0, 3).length > 0 ? matchedSkills.slice(0, 3) : ['Git', 'JavaScript', 'TypeScript'], difficulty: 'Beginner', estimatedTime: '1-2 weeks', whyItMatters: 'Open source contributions on GitHub are a major trust signal for engineering hiring managers.', githubKeywords: ['open-source', 'contribution', 'pull-request'] },
+      { title: 'CLI Tool with NPM Publication', description: 'Build a useful command-line tool, write tests, add CI, and publish to npm. Shows engineering maturity: packaging, versioning, and documentation.', techStack: ['Node.js', 'Commander.js', 'Jest', 'GitHub Actions'], difficulty: 'Intermediate', estimatedTime: '2-3 weeks', whyItMatters: 'Publishing a real npm package demonstrates professional engineering practices beyond tutorials.', githubKeywords: ['cli-tool', 'npm-package', 'commander'] }
+    ];
+  }
+
   return {
     source: 'Gemini AI Intelligence Engine (Synthesized)',
     executiveCritique: `Candidate demonstrates strong technical alignment for ${targetJobTitle} with solid fundamentals in ${topMatched}. Integrating quantifiable impact metrics and addressing gaps in ${topMissing} will maximize interview conversion.`,
@@ -149,16 +211,7 @@ function generateSynthesizedInsights({ resumeText, targetJobTitle, atsScore = 75
         reason: "Quantifies technical optimization with precise baseline-to-result numbers that ATS parsers rank highly."
       }
     ],
-    interviewPrepQuestions: [
-      {
-        question: `How have you designed and scaled backend/frontend architectures specifically utilizing ${topMatched.split(', ')[0] || 'modern tech'}?`,
-        idealAnswerFocus: "Discuss component decoupling, caching strategies (Redis), latency bottlenecks, and state management tradeoffs."
-      },
-      {
-        question: `Describe a production outage or performance degradation you diagnosed and resolved under pressure.`,
-        idealAnswerFocus: "Use the STAR method: describe the root cause analysis, monitoring tools used, remediation, and preventative CI/CD safeguards."
-      }
-    ]
+    projectRecommendations
   };
 }
 

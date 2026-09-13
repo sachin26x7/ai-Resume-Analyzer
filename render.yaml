@@ -9,8 +9,16 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 10000
+
+      # Your deployed Netlify client URL (for CORS)
+      # Update this if your Netlify site URL changes
       - key: CLIENT_URL
         value: https://elegant-lokum-cf3449.netlify.app
+
+      # Set these in Render Dashboard → Environment → Secret Files
+      # Never commit actual values to git
       - key: GEMINI_API_KEY
         sync: false
       - key: MONGODB_URI
