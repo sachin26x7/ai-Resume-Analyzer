@@ -1,33 +1,17 @@
-# Render Deployment Blueprint
 services:
-  # Backend API Web Service
   - type: web
     name: ai-resume-analysier-api
-    env: node
-    plan: free
-    buildCommand: cd server && npm install
-    startCommand: cd server && npm start
+    runtime: node
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
       - key: CLIENT_URL
-        value: https://ai-resume-analysier.netlify.app
-      # Optional MongoDB Connection: You can supply your MongoDB Atlas URI in Render Dashboard
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
       - key: MONGODB_URI
         sync: false
-
-  # Optional Frontend Static Site on Render (if deploying client to Render instead of Netlify)
-  - type: static
-    name: ai-resume-analysier-client
-    buildCommand: cd client && npm install && npm run build
-    staticPublishPath: client/dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        value: https://ai-resume-analysier-api.onrender.com

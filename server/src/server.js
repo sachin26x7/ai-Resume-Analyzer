@@ -18,13 +18,17 @@ if (![process.env.GEMINI_API_KEY, process.env.GOOGLE_GENAI_API_KEY, process.env.
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean);
 
 // Security & Utility Middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(cors({
-  origin: '*', // Allows Netlify client & local dev
+  origin: allowedOrigins.length ? allowedOrigins : '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));

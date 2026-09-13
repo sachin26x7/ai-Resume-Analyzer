@@ -1,6 +1,6 @@
 import { analyzeResumeClient } from './clientNlpEngine';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE_URL = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');
 const LOCAL_STORAGE_HISTORY_KEY = 'ats_resume_history';
 
 export async function analyzeResumeApi(resumeText, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences) {
