@@ -20,10 +20,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   process.env.CLIENT_URL,
-  'https://elegant-lokum-cf3449.netlify.app'
 ]
   .filter(Boolean)
   .map(origin => origin.trim().replace(/\/$/, ''));
+const netlifyOriginPattern = /^https:\/\/[a-z0-9-]+\.netlify\.app$/i;
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -33,7 +33,7 @@ app.use(cors({
       return callback(null, true);
     }
 
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin) || netlifyOriginPattern.test(origin)) {
       return callback(null, true);
     }
 

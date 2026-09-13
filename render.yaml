@@ -10,7 +10,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: CLIENT_URL
-        value: https://resume-ai-analyzer1.netlify.app
+        value: https://elegant-lokum-cf3449.netlify.app
       - key: GEMINI_API_KEY
         sync: false
       - key: MONGODB_URI
