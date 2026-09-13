@@ -83,20 +83,3 @@ export async function clearResumeHistory() {
   return res.json();
 }
 
-export async function fetchJobRoles() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/resume/roles`);
-    if (res.ok) {
-      const data = await res.json();
-      return data.roles;
-    }
-  } catch (e) {
-    // fallback to null — caller will use static templates
-  }
-  return null;
-}
-
-// Aliases for backward compatibility
-export const getResumeHistoryApi = fetchResumeHistory;
-export const deleteResumeHistoryApi = deleteResumeHistoryItem;
-export const clearAllResumeHistoryApi = clearResumeHistory;

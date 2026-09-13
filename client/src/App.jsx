@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import UploadAnalysisPanel from './components/UploadAnalysisPanel';
@@ -201,9 +201,7 @@ export default function App() {
             {/* 5. Career Recommendations Deck */}
             <CareerRecommendationsDeck
               analysisResult={analysisResult}
-              recommendations={analysisResult?.careerRecommendations?.top5 || analysisResult?.careerRecommendations}
               targetJobTitle={targetJobTitle}
-              userLocation={preferences?.preferredLocation || 'Bengaluru'}
             />
 
 

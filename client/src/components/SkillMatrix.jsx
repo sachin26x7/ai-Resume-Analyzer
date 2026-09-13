@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CheckCircle2, XCircle, Tag, Sparkles } from 'lucide-react';
 
 export default function SkillMatrix({ analysisResult }) {

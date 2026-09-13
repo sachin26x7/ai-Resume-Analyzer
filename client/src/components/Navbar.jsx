@@ -1,4 +1,3 @@
-import React from 'react';
 import { FileText, History, ArrowRight } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 

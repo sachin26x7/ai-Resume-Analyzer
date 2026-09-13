@@ -1,4 +1,3 @@
-import React from 'react';
 import { ShieldCheck, ArrowRight } from 'lucide-react';
 
 export default function HeroSection({ onScrollToUpload }) {

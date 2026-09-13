@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   MapPin, 
   DollarSign, 
@@ -41,10 +41,8 @@ const DOMAIN_FILTERS = [
 
 export default function CareerRecommendationsDeck({ 
   analysisResult,
-  recommendations,
   liveJobs,
-  targetJobTitle,
-  userLocation
+  targetJobTitle
 }) {
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [selectedType, setSelectedType] = useState('all'); // 'all' | 'internship' | 'fulltime'

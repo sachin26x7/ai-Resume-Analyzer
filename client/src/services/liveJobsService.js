@@ -103,8 +103,6 @@ export const INDIAN_TECH_HUBS = {
   }
 };
 
-export const LOCATIONS = ["Remote", "Bengaluru", "Kolkata", "Delhi NCR", "Mumbai", "Hyderabad", "Pune", "Chennai"];
-
 /**
  * Normalizes skill strings for accurate matching
  */
