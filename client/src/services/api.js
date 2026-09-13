@@ -45,13 +45,20 @@ export async function analyzeResume(formDataOrJson) {
 
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.error || `Server responded with status ${response.status}`);
+      const error = new Error(errData.error || `Server responded with status ${response.status}`);
+      error.isApiError = true;
+      error.status = response.status;
+      throw error;
     }
 
     const data = await response.json();
     saveToLocalHistory(data);
     return { ...data, source: 'backend-api' };
   } catch (error) {
+    if (error.isApiError) {
+      throw error;
+    }
+
     console.warn('Backend API request failed or timed out. Using high-precision Client NLP Engine fallback:', error.message);
     
     // Extract parameters for client fallback

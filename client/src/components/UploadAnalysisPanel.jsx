@@ -28,6 +28,8 @@ const POPULAR_SUGGESTIONS = [
 export default function UploadAnalysisPanel({
   onAnalyze,
   onReset,
+  analysisError,
+  onClearAnalysisError,
   isAnalyzing,
   resumeText,
   setResumeText,
@@ -66,6 +68,7 @@ export default function UploadAnalysisPanel({
 
   const validateAndSetFile = (file) => {
     setFileError(null);
+    onClearAnalysisError?.();
     if (!file) return;
 
     const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
@@ -252,10 +255,10 @@ export default function UploadAnalysisPanel({
                     </div>
                   )}
 
-                  {fileError && (
+                  {(fileError || analysisError) && (
                     <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 dark:bg-red-900/20 p-2.5 rounded-lg border border-red-200 dark:border-red-800">
                       <AlertCircle className="w-4 h-4 shrink-0" />
-                      <span>{fileError}</span>
+                      <span>{fileError || analysisError}</span>
                     </div>
                   )}
                 </div>

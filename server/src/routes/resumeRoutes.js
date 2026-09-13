@@ -15,13 +15,30 @@ const mongoose = require('mongoose');
 
 const router = express.Router();
 
+function isLikelyResumeText(text) {
+  const normalizedText = text.toLowerCase();
+  const sectionMatches = [
+    /\b(summary|profile|objective)\b/,
+    /\b(skills|technical skills|competencies|technologies)\b/,
+    /\b(experience|employment|work history|internship)\b/,
+    /\b(education|academic|qualification)\b/,
+    /\b(projects|certifications|achievements)\b/
+  ].filter(pattern => pattern.test(normalizedText)).length;
+  const hasContactDetails = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(text)
+    || /\b(linkedin|github)\.com\b/i.test(text)
+    || /(?:\+?\d[\d\s().-]{8,}\d)/.test(text);
+  const hasCareerLanguage = /\b(developed|engineered|managed|designed|deployed|worked|built|responsibilit(?:y|ies))\b/i.test(text);
+
+  return sectionMatches >= 2 || (sectionMatches >= 1 && hasContactDetails && hasCareerLanguage);
+}
+
 // Configure Multer for in-memory PDF uploads (Render & cloud friendly)
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB max
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'application/pdf' || file.originalname.endsWith('.pdf') || file.mimetype === 'text/plain') {
+    if (file.mimetype === 'application/pdf' || file.originalname.toLowerCase().endsWith('.pdf') || file.mimetype === 'text/plain') {
       cb(null, true);
     } else {
       cb(new Error('Only PDF and Plain Text files are supported!'), false);
@@ -43,7 +60,7 @@ router.post('/analyze', upload.single('resumeFile'), async (req, res) => {
     let resumeText = (req.body.resumeText || '').trim();
     const targetJobTitle = req.body.targetJobTitle || 'Full Stack Software Engineer';
 
-    // If PDF file was uploaded, extract text using pdf-parse with fallback handling
+    // If PDF file was uploaded, extract text using pdf-parse.
     if (req.file) {
       try {
         if (req.file.mimetype === 'application/pdf' || (req.file.originalname && req.file.originalname.toLowerCase().endsWith('.pdf'))) {
@@ -58,14 +75,18 @@ router.post('/analyze', upload.single('resumeFile'), async (req, res) => {
           }
         }
       } catch (pdfErr) {
-        console.warn('PDF stream extraction note, using text fallback:', pdfErr.message);
+        return res.status(422).json({
+          success: false,
+          error: 'Please upload a valid resume or CV PDF with selectable text.'
+        });
       }
     }
 
-    // If resumeText is still empty or very short, synthesize candidate profile from upload metadata
-    if (!resumeText || resumeText.length < 5) {
-      const candidateTag = req.file ? req.file.originalname.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' ') : "Candidate Profile";
-      resumeText = `${candidateTag}\nProfessional Profile for ${targetJobTitle}.\nTechnical Skills: JavaScript, React, Node.js, Python, Git, Problem Solving, RESTful APIs.\nProfessional Experience: Engineering and developing scalable applications.`;
+    if (!resumeText || resumeText.length < 5 || (req.file && !isLikelyResumeText(resumeText))) {
+      return res.status(422).json({
+        success: false,
+        error: 'Please upload a valid resume or CV PDF. The uploaded document does not look like a resume.'
+      });
     }
     let targetJobDescription = req.body.targetJobDescription || '';
     let jobRequiredSkills = [];

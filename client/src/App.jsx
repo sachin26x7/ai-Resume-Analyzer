@@ -28,18 +28,21 @@ export default function App() {
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [analysisError, setAnalysisError] = useState(null);
   const [showAuditModal, setShowAuditModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   // Analyze Resume Function
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
+    setAnalysisError(null);
     try {
       let result;
       if (selectedFile) {
         try {
           result = await analyzeResumeFileApi(selectedFile, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences, resumeText);
         } catch (err) {
+          if (err.isApiError) throw err;
           console.warn('Backend server unreachable, running client NLP fallback...');
           result = analyzeResumeClient(resumeText, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences);
         }
@@ -47,6 +50,7 @@ export default function App() {
         try {
           result = await analyzeResumeApi(resumeText, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences);
         } catch (err) {
+          if (err.isApiError) throw err;
           console.warn('Backend server unreachable, running client NLP fallback...');
           result = analyzeResumeClient(resumeText, targetJobTitle, targetJobDescription, jobRequiredSkills, preferences);
         }
@@ -58,7 +62,7 @@ export default function App() {
       }, 100);
     } catch (error) {
       console.error('Analysis error:', error);
-      alert('Error analyzing resume: ' + (error.message || 'Please check backend server connection'));
+      setAnalysisError(error.message || 'Please check the backend server connection.');
     } finally {
       setIsAnalyzing(false);
     }
@@ -112,6 +116,8 @@ export default function App() {
         <UploadAnalysisPanel
           onAnalyze={handleAnalyze}
           onReset={() => setAnalysisResult(null)}
+          analysisError={analysisError}
+          onClearAnalysisError={() => setAnalysisError(null)}
           isAnalyzing={isAnalyzing}
           resumeText={resumeText}
           setResumeText={setResumeText}
