@@ -65,23 +65,23 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 dark:bg-[#083d1c]/80 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 dark:bg-[#0B1220]/80 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-white dark:bg-[#115e30] border border-[#E4E7EB] dark:border-[#1e8247] rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-white dark:bg-[#111C2E] border border-[#E2E8F0] dark:border-[#253247] rounded-2xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
 
         {/* Top Bar */}
-        <div className="flex items-center justify-between px-5 py-4 bg-[#F5F7FA] dark:bg-[#083d1c] border-b border-[#E4E7EB] dark:border-[#1e8247] shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 bg-[#F8FAFC] dark:bg-[#0B1220] border-b border-[#E2E8F0] dark:border-[#253247] shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#4CAF4F] dark:bg-[#FAB818] text-white dark:text-[#083d1c] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-[#2563EB] dark:bg-[#2563EB] text-white dark:text-white flex items-center justify-center font-bold">
               <History className="w-4 h-4" />
             </div>
             <div>
-              <span className="font-bold text-sm text-[#263238] dark:text-white block">Resume Analysis History</span>
-              <span className="text-[11px] text-[#717171] dark:text-[#E8F5E9]">
+              <span className="font-bold text-sm text-[#1E293B] dark:text-white block">Resume Analysis History</span>
+              <span className="text-[11px] text-[#64748B] dark:text-[#DBEAFE]">
                 Stored in MongoDB &bull; {historyList.length} record{historyList.length !== 1 ? 's' : ''}
               </span>
             </div>
@@ -92,7 +92,7 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
             <button
               onClick={loadHistory}
               disabled={loading}
-              className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#115e30] hover:bg-gray-100 dark:hover:bg-[#FAB818] dark:hover:text-[#083d1c] text-[#4CAF4F] dark:text-[#FFC72C] border border-[#E4E7EB] dark:border-[#1e8247] text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs disabled:opacity-50"
+              className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#111C2E] hover:bg-gray-100 dark:hover:bg-[#2563EB] dark:hover:text-[#0B1220] text-[#2563EB] dark:text-[#2563EB] border border-[#E2E8F0] dark:border-[#253247] text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs disabled:opacity-50"
               title="Refresh history from MongoDB"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -112,7 +112,7 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
 
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-[#717171] dark:text-white hover:bg-gray-200 dark:hover:bg-[#115e30] transition-colors"
+              className="p-1.5 rounded-lg text-[#64748B] dark:text-white hover:bg-gray-200 dark:hover:bg-[#111C2E] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -120,13 +120,13 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-3.5 bg-white dark:bg-[#0b4d26]">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-3.5 bg-white dark:bg-[#0B1220]">
 
           {/* Loading */}
           {loading && (
             <div className="py-20 text-center space-y-3">
-              <Loader2 className="w-8 h-8 border-0 mx-auto text-[#4CAF4F] dark:text-[#FFC72C] animate-spin" />
-              <p className="text-xs font-semibold text-[#717171] dark:text-white">Loading from MongoDB...</p>
+              <Loader2 className="w-8 h-8 border-0 mx-auto text-[#2563EB] dark:text-[#2563EB] animate-spin" />
+              <p className="text-xs font-semibold text-[#64748B] dark:text-white">Loading from MongoDB...</p>
             </div>
           )}
 
@@ -134,11 +134,11 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
           {!loading && error && (
             <div className="py-16 text-center space-y-4">
               <ServerCrash className="w-12 h-12 mx-auto text-red-400" />
-              <p className="text-sm font-bold text-[#263238] dark:text-white">Failed to Load History</p>
-              <p className="text-xs text-[#717171] dark:text-[#E8F5E9] max-w-sm mx-auto">{error}</p>
+              <p className="text-sm font-bold text-[#1E293B] dark:text-white">Failed to Load History</p>
+              <p className="text-xs text-[#64748B] dark:text-[#DBEAFE] max-w-sm mx-auto">{error}</p>
               <button
                 onClick={loadHistory}
-                className="mt-2 px-5 py-2 rounded-lg bg-[#4CAF4F] dark:bg-[#FAB818] hover:bg-[#388E3C] dark:hover:bg-[#FFC72C] text-white dark:text-[#083d1c] text-xs font-bold shadow-sm transition-all"
+                className="mt-2 px-5 py-2 rounded-lg bg-[#2563EB] dark:bg-[#2563EB] hover:bg-[#1D4ED8] dark:hover:bg-[#2563EB] text-white dark:text-white text-xs font-bold shadow-sm transition-all"
               >
                 Retry
               </button>
@@ -148,9 +148,9 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
           {/* Empty state */}
           {!loading && !error && historyList.length === 0 && (
             <div className="py-16 text-center space-y-3">
-              <History className="w-10 h-10 mx-auto text-[#4CAF4F] dark:text-[#FFC72C]" />
-              <p className="text-base font-bold text-[#263238] dark:text-white">No analysis records yet</p>
-              <p className="text-xs text-[#717171] dark:text-[#E8F5E9] max-w-sm mx-auto">
+              <History className="w-10 h-10 mx-auto text-[#2563EB] dark:text-[#2563EB]" />
+              <p className="text-base font-bold text-[#1E293B] dark:text-white">No analysis records yet</p>
+              <p className="text-xs text-[#64748B] dark:text-[#DBEAFE] max-w-sm mx-auto">
                 Analyze a resume to save evaluations here. All records are stored in MongoDB.
               </p>
             </div>
@@ -166,9 +166,9 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
                   : (rawScore?.percentage ?? 0);
                 const scoreTier = typeof rawScore === 'object' && rawScore?.tier ? rawScore.tier : '';
 
-                let scoreColor = 'text-[#2E7D32] dark:text-[#083d1c] bg-[#E8F5E9] dark:bg-[#FAB818] font-bold border border-[#C8E6C9] dark:border-transparent';
+                let scoreColor = 'text-[#1D4ED8] dark:text-white bg-[#DBEAFE] dark:bg-[#2563EB] font-bold border border-[#BFDBFE] dark:border-transparent';
                 if (score < 50) scoreColor = 'text-red-700 bg-red-50 dark:bg-red-600 dark:text-white font-bold border border-red-200 dark:border-transparent';
-                else if (score < 70) scoreColor = 'text-amber-800 bg-amber-50 dark:bg-[#FAB818] dark:text-[#083d1c] font-bold border border-amber-200 dark:border-transparent';
+                else if (score < 70) scoreColor = 'text-amber-800 bg-amber-50 dark:bg-[#2563EB] dark:text-white font-bold border border-amber-200 dark:border-transparent';
 
                 const dateStr = item.createdAt
                   ? new Date(item.createdAt).toLocaleString()
@@ -183,26 +183,26 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
                   <div
                     key={itemId}
                     onClick={() => !isDeleting && onSelectHistoryItem(item)}
-                    className={`p-4 rounded-xl bg-[#F5F7FA] dark:bg-[#115e30] border border-[#E4E7EB] dark:border-[#1e8247] hover:border-[#4CAF4F] dark:hover:border-[#FFC72C] hover:bg-white dark:hover:bg-[#16703b] transition-all cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs ${isDeleting ? 'opacity-40 pointer-events-none' : ''}`}
+                    className={`p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#111C2E] border border-[#E2E8F0] dark:border-[#253247] hover:border-[#2563EB] dark:hover:border-[#2563EB] hover:bg-white dark:hover:bg-[#182438] transition-all cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs ${isDeleting ? 'opacity-40 pointer-events-none' : ''}`}
                   >
                     {/* Left: Info */}
                     <div className="space-y-1.5 flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-bold text-sm text-[#263238] dark:text-white truncate group-hover:text-[#4CAF4F] dark:group-hover:text-[#FFC72C] transition-colors">
+                        <span className="font-bold text-sm text-[#1E293B] dark:text-white truncate group-hover:text-[#2563EB] dark:group-hover:text-[#2563EB] transition-colors">
                           {item.candidate?.name || 'Candidate Evaluation'}
                         </span>
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-white dark:bg-[#083d1c] text-[#4CAF4F] dark:text-[#FFC72C] border border-[#E4E7EB] dark:border-[#1e8247]">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-white dark:bg-[#0B1220] text-[#2563EB] dark:text-[#2563EB] border border-[#E2E8F0] dark:border-[#253247]">
                           {item.targetJob?.title || 'Software Engineer'}
                         </span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-[#717171] dark:text-[#E8F5E9]">
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-[#64748B] dark:text-[#DBEAFE]">
                         <span className="flex items-center gap-1 text-[11px]">
-                          <Calendar className="w-3.5 h-3.5 text-[#4CAF4F] dark:text-[#FFC72C]" />
+                          <Calendar className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#2563EB]" />
                           {dateStr}
                         </span>
                         {Array.isArray(item.skillGap?.matchedSkills) && (
-                          <span className="text-[11px] text-[#2E7D32] dark:text-[#FFC72C] font-semibold flex items-center gap-1">
+                          <span className="text-[11px] text-[#1D4ED8] dark:text-[#2563EB] font-semibold flex items-center gap-1">
                             <CheckCircle2 className="w-3 h-3" />
                             {item.skillGap.matchedSkills.length} matched
                           </span>
@@ -214,7 +214,7 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
                           </span>
                         )}
                         {item.geminiInsights?.recruiterHiringVerdict && (
-                          <span className="text-[11px] text-[#4CAF4F] dark:text-[#FFC72C] font-mono flex items-center gap-1">
+                          <span className="text-[11px] text-[#2563EB] dark:text-[#2563EB] font-mono flex items-center gap-1">
                             <Bot className="w-3 h-3" />
                             {item.geminiInsights.recruiterHiringVerdict}
                           </span>
@@ -232,7 +232,7 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); onSelectHistoryItem(item); onClose(); }}
-                        className="px-3.5 py-2 rounded-lg bg-[#4CAF4F] hover:bg-[#388E3C] dark:bg-[#FAB818] dark:hover:bg-[#FFC72C] text-white dark:text-[#083d1c] font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all active:scale-95"
+                        className="px-3.5 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-[#2563EB] dark:hover:bg-[#2563EB] text-white dark:text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all active:scale-95"
                         title="Load this analysis onto the dashboard"
                       >
                         <span>Load</span>
@@ -243,7 +243,7 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
                         type="button"
                         onClick={(e) => handleDeleteItem(e, itemId)}
                         disabled={isDeleting}
-                        className="p-2 rounded-lg text-[#89939E] dark:text-white hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
+                        className="p-2 rounded-lg text-[#94A3B8] dark:text-white hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
                         title="Delete from MongoDB"
                       >
                         {isDeleting
@@ -260,14 +260,14 @@ export default function HistoryModal({ onClose, onSelectHistoryItem }) {
         </div>
 
         {/* Bottom Bar */}
-        <div className="p-4 bg-[#F5F7FA] dark:bg-[#083d1c] border-t border-[#E4E7EB] dark:border-[#1e8247] flex items-center justify-between shrink-0">
-          <span className="text-[11px] text-[#89939E] dark:text-[#C8E6C9] flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#4CAF4F] dark:bg-[#FFC72C] inline-block" />
+        <div className="p-4 bg-[#F8FAFC] dark:bg-[#0B1220] border-t border-[#E2E8F0] dark:border-[#253247] flex items-center justify-between shrink-0">
+          <span className="text-[11px] text-[#94A3B8] dark:text-[#BFDBFE] flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#2563EB] dark:bg-[#2563EB] inline-block" />
             Powered by MongoDB
           </span>
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-white dark:bg-[#115e30] hover:bg-gray-100 dark:hover:bg-[#16703b] text-[#263238] dark:text-white text-xs font-semibold transition-colors border border-[#E4E7EB] dark:border-[#1e8247]"
+            className="px-4 py-2 rounded-lg bg-white dark:bg-[#111C2E] hover:bg-gray-100 dark:hover:bg-[#182438] text-[#1E293B] dark:text-white text-xs font-semibold transition-colors border border-[#E2E8F0] dark:border-[#253247]"
           >
             Close
           </button>

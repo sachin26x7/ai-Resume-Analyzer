@@ -8,30 +8,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        nexcent: {
-          green: '#4CAF4F',
-          'green-dark': '#388E3C',
-          'green-light': '#E8F5E9',
-          silver: '#F5F7FA',
-          slate: '#263238',
-          heading: '#4D4D4D',
-          body: '#717171',
-          muted: '#89939E',
-          border: '#E4E7EB',
-          white: '#FFFFFF',
+        brand: {
+          blue: '#2563EB',
+          'blue-hover': '#1D4ED8',
+          'blue-soft': '#EFF6FF',
+          teal: '#14B8A6',
         },
-        forest: {
-          darkest: '#062d14',
-          dark: '#083d1c',
-          main: '#0b4d26',
-          card: '#115e30',
-          elevated: '#16703b',
-          border: '#1e8247',
+        surface: {
+          main: '#FFFFFF',
+          secondary: '#F8FAFC',
+          card: '#FFFFFF',
+          dark: '#0B1220',
+          'dark-card': '#111C2E',
+          elevated: '#182438',
+          border: '#E2E8F0',
         },
-        gold: {
-          400: '#ffd033',
-          500: '#ffc72c',
-          600: '#fab818',
+        status: {
+          success: '#16A34A',
+          warning: '#F59E0B',
+          error: '#EF4444',
+          info: '#3B82F6',
         }
       },
       fontFamily: {

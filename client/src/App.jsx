@@ -8,9 +8,9 @@ import SkillMatrix from './components/SkillMatrix';
 import PersonalizedFeedbackDeck from './components/PersonalizedFeedbackDeck';
 import CareerRecommendationsDeck from './components/CareerRecommendationsDeck';
 import ProjectRecommendationsCard from './components/ProjectRecommendationsCard';
-
 import AuditReportModal from './components/AuditReportModal';
 import HistoryModal from './components/HistoryModal';
+import { BarChart3, BriefcaseBusiness, FileCheck2, FileSearch, Sparkles } from 'lucide-react';
 import { analyzeResumeApi, analyzeResumeFileApi } from './services/api';
 import { analyzeResumeClient } from './services/clientNlpEngine';
 
@@ -124,62 +124,106 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative transition-colors">
-      
-      {/* Top Navigation */}
+    <div className="app-shell min-h-screen flex flex-col relative transition-colors">
       <Navbar onOpenHistoryModal={() => setShowHistoryModal(true)} />
 
-      {/* Main Content Body */}
-      <main className="flex-1 space-y-6 pb-16">
-        
-        {/* Hero Section */}
-        <HeroSection onScrollToUpload={() => document.getElementById('upload-panel')?.scrollIntoView({ behavior: 'smooth' })} />
-
-        {/* Upload & Job Input Workspace */}
-        <UploadAnalysisPanel
-          onAnalyze={handleAnalyze}
-          onReset={() => setAnalysisResult(null)}
-          analysisError={analysisError}
-          onClearAnalysisError={() => setAnalysisError(null)}
-          isAnalyzing={isAnalyzing}
-          resumeText={resumeText}
-          setResumeText={setResumeText}
-          selectedFile={selectedFile}
-          setSelectedFile={setSelectedFile}
-          targetJobTitle={targetJobTitle}
-          setTargetJobTitle={setTargetJobTitle}
-          targetJobDescription={targetJobDescription}
-          setTargetJobDescription={setTargetJobDescription}
-          jobRequiredSkills={jobRequiredSkills}
-          setJobRequiredSkills={setJobRequiredSkills}
-          preferences={preferences}
-          setPreferences={setPreferences}
+      <main className="flex-1">
+        <HeroSection
+          onScrollToUpload={() => document.getElementById('upload-panel')?.scrollIntoView({ behavior: 'smooth' })}
+          onExploreFeatures={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
         />
 
-        {/* Results Container (Rendered after analysis) */}
-        {analysisResult && (
-          <div id="results-section" className="space-y-6 animate-fadeIn">
-            
-            {/* Section Demarcation Header */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#4CAF4F] dark:text-[#FFC72C]">
-                <span className="w-2 h-2 rounded-full bg-[#4CAF4F] dark:bg-[#FFC72C] animate-pulse" />
-                <span>NLP Evaluation Dashboard & Explainability Matrix</span>
-              </div>
+        <section id="features" className="public-section feature-section">
+          <div className="site-container">
+            <div className="section-heading">
+              <span className="eyebrow">A clearer path forward</span>
+              <h2>Make every application more intentional.</h2>
+              <p>Understand how your resume reads to an ATS and what to improve before you apply.</p>
             </div>
+            <div className="feature-grid">
+              <article className="feature-card">
+                <span className="feature-icon"><FileSearch aria-hidden="true" /></span>
+                <h3>Know where you stand</h3>
+                <p>See a transparent score breakdown across keywords, relevance, structure, and readability.</p>
+              </article>
+              <article className="feature-card">
+                <span className="feature-icon"><BarChart3 aria-hidden="true" /></span>
+                <h3>Find your skill gaps</h3>
+                <p>Compare your experience with role requirements and surface the skills that need attention.</p>
+              </article>
+              <article className="feature-card">
+                <span className="feature-icon"><BriefcaseBusiness aria-hidden="true" /></span>
+                <h3>Turn feedback into action</h3>
+                <p>Get practical recommendations and role suggestions grounded in your resume analysis.</p>
+              </article>
+            </div>
+          </div>
+        </section>
 
-            {/* 1. Scorecard Overview */}
+        <section id="how-it-works" className="public-section process-section">
+          <div className="site-container process-layout">
+            <div className="section-heading">
+              <span className="eyebrow">How it works</span>
+              <h2>From upload to a more confident application.</h2>
+              <p>A focused review of your resume, tailored to the role you want next.</p>
+            </div>
+            <ol className="process-list">
+              <li><span>01</span><div><h3>Add your resume</h3><p>Upload a file or paste your resume text securely for analysis.</p></div></li>
+              <li><span>02</span><div><h3>Choose a target role</h3><p>Select a role and refine the skills and preferences to match your goals.</p></div></li>
+              <li><span>03</span><div><h3>Review your insights</h3><p>Explore your score, skill alignment, recruiter feedback, and next steps.</p></div></li>
+            </ol>
+          </div>
+        </section>
+
+        <section className="analysis-section">
+          <div className="site-container">
+            <div className="analysis-heading">
+              <div>
+                <span className="eyebrow">Resume workspace</span>
+                <h2>Build a stronger application.</h2>
+                <p>Share your resume and the role you’re targeting to get a tailored review.</p>
+              </div>
+              <span className="analysis-note"><FileCheck2 aria-hidden="true" /> Your results are based on your resume</span>
+            </div>
+            <UploadAnalysisPanel
+              onAnalyze={handleAnalyze}
+              onReset={() => setAnalysisResult(null)}
+              analysisError={analysisError}
+              onClearAnalysisError={() => setAnalysisError(null)}
+              isAnalyzing={isAnalyzing}
+              resumeText={resumeText}
+              setResumeText={setResumeText}
+              selectedFile={selectedFile}
+              setSelectedFile={setSelectedFile}
+              targetJobTitle={targetJobTitle}
+              setTargetJobTitle={setTargetJobTitle}
+              targetJobDescription={targetJobDescription}
+              setTargetJobDescription={setTargetJobDescription}
+              jobRequiredSkills={jobRequiredSkills}
+              setJobRequiredSkills={setJobRequiredSkills}
+              preferences={preferences}
+              setPreferences={setPreferences}
+            />
+          </div>
+        </section>
+
+        {analysisResult && (
+          <section id="results-section" className="results-section animate-fadeIn">
+            <div className="site-container results-heading">
+              <div>
+                <span className="eyebrow"><Sparkles aria-hidden="true" /> Your analysis</span>
+                <h2>Resume insights</h2>
+                <p>Feedback and scores generated from your resume and selected target role.</p>
+              </div>
+              {targetJobTitle && <span className="target-role">{targetJobTitle}</span>}
+            </div>
             <ScorecardOverview
               analysisResult={analysisResult}
               onOpenAuditModal={() => setShowAuditModal(true)}
             />
-
-            {/* 2. Gemini AI Deep Analysis + Project Recommendations */}
             {analysisResult.geminiInsights && (
               <>
-                <GeminiInsightsCard
-                  geminiInsights={analysisResult.geminiInsights}
-                />
+                <GeminiInsightsCard geminiInsights={analysisResult.geminiInsights} />
                 <ProjectRecommendationsCard
                   geminiInsights={analysisResult.geminiInsights}
                   targetJobTitle={targetJobTitle}
@@ -187,38 +231,22 @@ export default function App() {
                 />
               </>
             )}
-
-            {/* 3. Skill Matrix */}
-            <SkillMatrix
-              analysisResult={analysisResult}
-            />
-
-            {/* 4. Feedback Deck */}
-            <PersonalizedFeedbackDeck
-              analysisResult={analysisResult}
-            />
-
-            {/* 5. Career Recommendations Deck */}
+            <SkillMatrix analysisResult={analysisResult} />
+            <PersonalizedFeedbackDeck analysisResult={analysisResult} />
             <CareerRecommendationsDeck
               analysisResult={analysisResult}
               targetJobTitle={targetJobTitle}
             />
-
-
-
-          </div>
+          </section>
         )}
-
       </main>
 
-      {/* Modals */}
       {showAuditModal && analysisResult && (
         <AuditReportModal
           analysisResult={analysisResult}
           onClose={() => setShowAuditModal(false)}
         />
       )}
-
       {showHistoryModal && (
         <HistoryModal
           onClose={() => setShowHistoryModal(false)}
@@ -226,18 +254,13 @@ export default function App() {
         />
       )}
 
-      {/* Footer */}
-      <footer className="border-t border-[#E4E7EB] dark:border-[#1e8247] bg-white dark:bg-[#083d1c] text-[#717171] dark:text-[#E8F5E9] py-6 px-4 sm:px-6 lg:px-8 text-xs transition-colors">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <p>
-            © {new Date().getFullYear()} <span className="text-[#263238] dark:text-white font-bold">ATSInsight.ai</span> — AI-Powered ATS Resume Analysis & Career Recommendation.
-          </p>
-          <p className="text-[#89939E] dark:text-[#C8E6C9] text-[11px]">
-            Fast • Secure • Explainable AI
-          </p>
+      <footer className="site-footer">
+        <div className="site-container footer-content">
+          <a className="footer-brand" href="#" aria-label="ATSInsight home">ATS<span>Insight</span></a>
+          <p>Thoughtful resume feedback for your next opportunity.</p>
+          <span>© {new Date().getFullYear()} ATSInsight</span>
         </div>
       </footer>
-
     </div>
   );
 }

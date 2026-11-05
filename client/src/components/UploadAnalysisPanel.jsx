@@ -192,7 +192,9 @@ export default function UploadAnalysisPanel({
     e.preventDefault();
     setTextError(null);
     if (!selectedFile && !resumeText.trim()) {
-      alert('Please upload a resume file (PDF/DOCX) or paste your resume text to begin analysis.');
+      const message = 'Upload a resume file or paste your resume text to begin analysis.';
+      if (activeTab === 'text') setTextError(message);
+      else setFileError(message);
       return;
     }
     // Validate pasted text for non-resume content
@@ -221,7 +223,7 @@ export default function UploadAnalysisPanel({
 
   return (
     <div id="upload-panel" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-      <div className="bg-white dark:bg-[#115e30] p-6 sm:p-8 rounded-xl border border-[#E4E7EB] dark:border-[#1e8247] shadow-sm relative">
+      <div className="bg-white dark:bg-[#111C2E] p-6 sm:p-8 rounded-xl border border-[#E2E8F0] dark:border-[#253247] shadow-sm relative">
         
         <form onSubmit={handleSubmit} className="space-y-6">
           
@@ -232,22 +234,22 @@ export default function UploadAnalysisPanel({
             <div className="lg:col-span-7 space-y-4">
               
               {/* Tab Selector */}
-              <div className="flex items-center justify-between border-b border-[#E4E7EB] dark:border-[#1e8247] pb-3">
+              <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#253247] pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-[#4D4D4D] dark:text-white flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-[#4CAF4F] dark:text-[#FFC72C]" />
+                  <span className="text-sm font-bold text-[#1E293B] dark:text-white flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-[#2563EB] dark:text-[#2563EB]" />
                     <span>Candidate Resume Ingestion</span>
                   </span>
                 </div>
 
-                <div className="flex p-1 rounded-lg bg-[#F5F7FA] dark:bg-[#083d1c] border border-[#E4E7EB] dark:border-[#1e8247] text-xs">
+                <div className="flex p-1 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1220] border border-[#E2E8F0] dark:border-[#253247] text-xs">
                   <button
                     type="button"
                     onClick={() => setActiveTab('upload')}
                     className={`px-3.5 py-1.5 rounded-md font-bold transition-all ${
                       activeTab === 'upload'
-                        ? 'bg-[#4CAF4F] dark:bg-[#FAB818] text-white dark:text-[#083d1c] shadow-xs'
-                        : 'text-[#717171] dark:text-white hover:text-[#4D4D4D] dark:hover:text-[#FFC72C]'
+                        ? 'bg-[#2563EB] dark:bg-[#2563EB] text-white dark:text-white shadow-xs'
+                        : 'text-[#64748B] dark:text-white hover:text-[#1E293B] dark:hover:text-[#2563EB]'
                     }`}
                   >
                     Upload File (PDF)
@@ -257,8 +259,8 @@ export default function UploadAnalysisPanel({
                     onClick={() => setActiveTab('text')}
                     className={`px-3.5 py-1.5 rounded-md font-bold transition-all ${
                       activeTab === 'text'
-                        ? 'bg-[#4CAF4F] dark:bg-[#FAB818] text-white dark:text-[#083d1c] shadow-xs'
-                        : 'text-[#717171] dark:text-white hover:text-[#4D4D4D] dark:hover:text-[#FFC72C]'
+                        ? 'bg-[#2563EB] dark:bg-[#2563EB] text-white dark:text-white shadow-xs'
+                        : 'text-[#64748B] dark:text-white hover:text-[#1E293B] dark:hover:text-[#2563EB]'
                     }`}
                   >
                     Paste Text
@@ -271,10 +273,19 @@ export default function UploadAnalysisPanel({
                 <div className="space-y-3">
                   {!selectedFile ? (
                     <div
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Choose a resume file, or drag and drop it here"
                       onDragOver={handleDragOver}
                       onDrop={handleDrop}
                       onClick={() => fileInputRef.current?.click()}
-                      className="border-2 border-dashed border-[#E4E7EB] dark:border-[#1e8247] hover:border-[#4CAF4F] dark:hover:border-[#FFC72C] rounded-xl p-8 text-center cursor-pointer transition-all bg-[#F5F7FA]/70 dark:bg-[#083d1c]/70 hover:bg-[#F5F7FA] dark:hover:bg-[#083d1c] flex flex-col items-center justify-center gap-3 group min-h-[175px]"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          fileInputRef.current?.click();
+                        }
+                      }}
+                      className="border-2 border-dashed border-[#E2E8F0] dark:border-[#253247] hover:border-[#2563EB] dark:hover:border-[#2563EB] rounded-xl p-8 text-center cursor-pointer transition-all bg-[#F8FAFC]/70 dark:bg-[#0B1220]/70 hover:bg-[#F8FAFC] dark:hover:bg-[#0B1220] flex flex-col items-center justify-center gap-3 group min-h-[175px]"
                     >
                       <input
                         ref={fileInputRef}
@@ -283,29 +294,29 @@ export default function UploadAnalysisPanel({
                         accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
                         className="hidden"
                       />
-                      <div className="w-12 h-12 rounded-full bg-[#E8F5E9] dark:bg-[#115e30] text-[#4CAF4F] dark:text-[#FFC72C] group-hover:scale-105 flex items-center justify-center transition-all shadow-xs">
+                      <div className="w-12 h-12 rounded-full bg-[#DBEAFE] dark:bg-[#111C2E] text-[#2563EB] dark:text-[#2563EB] group-hover:scale-105 flex items-center justify-center transition-all shadow-xs">
                         <UploadCloud className="w-6 h-6" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-[#4D4D4D] dark:text-white">
-                          Click to upload <span className="font-normal text-[#717171] dark:text-[#E8F5E9]">or drag and drop</span>
+                        <p className="text-sm font-semibold text-[#1E293B] dark:text-white">
+                          Click to upload <span className="font-normal text-[#64748B] dark:text-[#DBEAFE]">or drag and drop</span>
                         </p>
-                        <p className="text-xs text-[#89939E] dark:text-[#C8E6C9] mt-0.5">
+                        <p className="text-xs text-[#94A3B8] dark:text-[#BFDBFE] mt-0.5">
                           PDF, DOCX, or TXT (Max 10MB)
                         </p>
                       </div>
                     </div>
                   ) : (
-                    <div className="p-4 rounded-xl bg-[#F5F7FA] dark:bg-[#083d1c] border border-[#E4E7EB] dark:border-[#1e8247] flex items-center justify-between gap-3 shadow-xs">
+                    <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#0B1220] border border-[#E2E8F0] dark:border-[#253247] flex items-center justify-between gap-3 shadow-xs">
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 rounded-lg bg-[#E8F5E9] dark:bg-[#FFC72C]/20 text-[#4CAF4F] dark:text-[#FFC72C] flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded-lg bg-[#DBEAFE] dark:bg-[#2563EB]/20 text-[#2563EB] dark:text-[#2563EB] flex items-center justify-center shrink-0">
                           <CheckCircle2 className="w-5 h-5" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-[#263238] dark:text-white truncate">
+                          <p className="text-sm font-bold text-[#1E293B] dark:text-white truncate">
                             {selectedFile.name}
                           </p>
-                          <p className="text-xs text-[#717171] dark:text-[#E8F5E9]">
+                          <p className="text-xs text-[#64748B] dark:text-[#DBEAFE]">
                             {(selectedFile.size / 1024).toFixed(1)} KB • Ready for NLP Analysis
                           </p>
                         </div>
@@ -314,7 +325,7 @@ export default function UploadAnalysisPanel({
                       <button
                         type="button"
                         onClick={handleRemoveFile}
-                        className="p-2 rounded-lg text-[#89939E] dark:text-white hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        className="p-2 rounded-lg text-[#94A3B8] dark:text-white hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                         title="Remove uploaded resume"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -334,9 +345,9 @@ export default function UploadAnalysisPanel({
               {/* TAB 2: DIRECT RESUME TEXT AREA */}
               {activeTab === 'text' && (
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs text-[#717171] dark:text-[#E8F5E9]">
+                  <div className="flex items-center justify-between text-xs text-[#64748B] dark:text-[#DBEAFE]">
                     <span>Paste plain resume text or profile content:</span>
-                    <span className="font-mono text-[#4CAF4F] dark:text-[#FFC72C] font-semibold">{resumeText.split(/\s+/).filter(Boolean).length} words</span>
+                    <span className="font-mono text-[#2563EB] dark:text-[#2563EB] font-semibold">{resumeText.split(/\s+/).filter(Boolean).length} words</span>
                   </div>
                   <textarea
                     rows={7}
@@ -346,8 +357,8 @@ export default function UploadAnalysisPanel({
                     className={`w-full rounded-xl p-3.5 text-xs font-mono resize-y border focus:outline-none ${
                       textError
                         ? 'border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/10'
-                        : 'border-[#E4E7EB] dark:border-[#1e8247] focus:border-[#4CAF4F] dark:focus:border-[#FFC72C]'
-                    } bg-white dark:bg-[#083d1c] text-[#263238] dark:text-white`}
+                        : 'border-[#E2E8F0] dark:border-[#253247] focus:border-[#2563EB] dark:focus:border-[#2563EB]'
+                    } bg-white dark:bg-[#0B1220] text-[#1E293B] dark:text-white`}
                   />
                   {textError && (
                     <div className="flex items-start gap-2 text-xs text-red-600 bg-red-50 dark:bg-red-900/20 p-2.5 rounded-lg border border-red-200 dark:border-red-800">
@@ -359,8 +370,8 @@ export default function UploadAnalysisPanel({
               )}
 
               {/* Helper Guidelines */}
-              <div className="p-3 rounded-lg bg-[#E8F5E9]/50 dark:bg-[#083d1c] border border-[#C8E6C9] dark:border-[#1e8247] flex items-start gap-2.5 text-xs text-[#2E7D32] dark:text-[#E8F5E9]">
-                <HelpCircle className="w-4 h-4 text-[#4CAF4F] dark:text-[#FFC72C] shrink-0 mt-0.5" />
+              <div className="p-3 rounded-lg bg-[#DBEAFE]/50 dark:bg-[#0B1220] border border-[#BFDBFE] dark:border-[#253247] flex items-start gap-2.5 text-xs text-[#1D4ED8] dark:text-[#DBEAFE]">
+                <HelpCircle className="w-4 h-4 text-[#2563EB] dark:text-[#2563EB] shrink-0 mt-0.5" />
                 <p>
                   <strong>Tip:</strong> Ensure resume includes clear section headers (<em>Experience, Skills, Education</em>) and quantified metric bullet points for high ATS readability.
                 </p>
@@ -372,20 +383,20 @@ export default function UploadAnalysisPanel({
             <div className="lg:col-span-5 space-y-4">
               
               <div className="flex items-center justify-between">
-                <label className="text-sm font-bold text-[#4D4D4D] dark:text-white flex items-center gap-2">
-                  <Briefcase className="w-4 h-4 text-[#4CAF4F] dark:text-[#FFC72C]" />
+                <label className="text-sm font-bold text-[#1E293B] dark:text-white flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-[#2563EB] dark:text-[#2563EB]" />
                   <span>Target Role & Required Skills</span>
                 </label>
-                <span className="text-[11px] text-[#4CAF4F] dark:text-[#FFC72C] font-semibold">Customizable Stack</span>
+                <span className="text-[11px] text-[#2563EB] dark:text-[#2563EB] font-semibold">Customizable Stack</span>
               </div>
 
               {/* Standard Role Selector */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#4D4D4D] dark:text-[#E8F5E9]">Target Industry Role</label>
+                <label className="text-xs font-semibold text-[#1E293B] dark:text-[#DBEAFE]">Target Industry Role</label>
                 <select
                   value={selectedPresetIndex}
                   onChange={(e) => handleSelectPreset(Number(e.target.value))}
-                  className="w-full rounded-lg p-2.5 text-xs font-bold bg-[#F5F7FA] dark:bg-[#083d1c] text-[#263238] dark:text-white border border-[#E4E7EB] dark:border-[#1e8247]"
+                  className="w-full rounded-lg p-2.5 text-xs font-bold bg-[#F8FAFC] dark:bg-[#0B1220] text-[#1E293B] dark:text-white border border-[#E2E8F0] dark:border-[#253247]"
                 >
                   {PRESET_ROLES.map((role, idx) => (
                     <option key={idx} value={idx}>
@@ -406,14 +417,14 @@ export default function UploadAnalysisPanel({
                     value={targetJobTitle}
                     onChange={(e) => setTargetJobTitle(e.target.value)}
                     placeholder="e.g. AI Research Engineer / DevOps Lead"
-                    className="w-full rounded-lg p-2.5 text-xs bg-[#F5F7FA] dark:bg-[#083d1c] text-[#263238] dark:text-white border border-[#E4E7EB] dark:border-[#1e8247]"
+                    className="w-full rounded-lg p-2.5 text-xs bg-[#F8FAFC] dark:bg-[#0B1220] text-[#1E293B] dark:text-white border border-[#E2E8F0] dark:border-[#253247]"
                   />
                   <textarea
                     rows={2}
                     value={targetJobDescription}
                     onChange={(e) => setTargetJobDescription(e.target.value)}
                     placeholder="Paste job description keywords & requirements..."
-                    className="w-full rounded-lg p-2 text-xs bg-[#F5F7FA] dark:bg-[#083d1c] text-[#263238] dark:text-white border border-[#E4E7EB] dark:border-[#1e8247]"
+                    className="w-full rounded-lg p-2 text-xs bg-[#F8FAFC] dark:bg-[#0B1220] text-[#1E293B] dark:text-white border border-[#E2E8F0] dark:border-[#253247]"
                   />
                 </div>
               )}
@@ -421,8 +432,8 @@ export default function UploadAnalysisPanel({
               {/* Required Target Skills Tag Input */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-[#4D4D4D] dark:text-[#E8F5E9] flex items-center gap-1">
-                    <Layers className="w-3.5 h-3.5 text-[#4CAF4F] dark:text-[#FFC72C]" />
+                  <label className="text-xs font-semibold text-[#1E293B] dark:text-[#DBEAFE] flex items-center gap-1">
+                    <Layers className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#2563EB]" />
                     <span>Target Requirements Checklist ({jobRequiredSkills.length})</span>
                   </label>
                 </div>
@@ -436,14 +447,14 @@ export default function UploadAnalysisPanel({
                       onChange={(e) => setNewSkillInput(e.target.value)}
                       onKeyDown={handleKeyDownSkill}
                       placeholder="Add custom skill (e.g. Docker, GraphQL)..."
-                      className="w-full rounded-lg px-3 py-1.5 text-xs bg-[#F5F7FA] dark:bg-[#083d1c] text-[#263238] dark:text-white border border-[#E4E7EB] dark:border-[#1e8247]"
+                      className="w-full rounded-lg px-3 py-1.5 text-xs bg-[#F8FAFC] dark:bg-[#0B1220] text-[#1E293B] dark:text-white border border-[#E2E8F0] dark:border-[#253247]"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={() => handleAddSkill()}
                     disabled={!newSkillInput.trim()}
-                    className="min-w-[70px] justify-center px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#4CAF4F] hover:bg-[#388E3C] dark:bg-[#FAB818] dark:hover:bg-[#FFC72C] text-white dark:text-[#083d1c] flex items-center gap-1 transition-all shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="min-w-[70px] justify-center px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-[#2563EB] dark:hover:bg-[#2563EB] text-white dark:text-white flex items-center gap-1 transition-all shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add</span>
@@ -451,9 +462,9 @@ export default function UploadAnalysisPanel({
                 </div>
 
                 {/* Active Skill Chips with Remove Buttons */}
-                <div className="p-2.5 rounded-lg bg-[#F5F7FA] dark:bg-[#083d1c] border border-[#E4E7EB] dark:border-[#1e8247] min-h-[70px] max-h-36 overflow-y-auto space-y-1.5">
+                <div className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1220] border border-[#E2E8F0] dark:border-[#253247] min-h-[70px] max-h-36 overflow-y-auto space-y-1.5">
                   {jobRequiredSkills.length === 0 ? (
-                    <p className="text-[11px] text-[#89939E] dark:text-[#C8E6C9] italic text-center py-3">
+                    <p className="text-[11px] text-[#94A3B8] dark:text-[#BFDBFE] italic text-center py-3">
                       No target skills added yet. Type a skill above or click suggestions below.
                     </p>
                   ) : (
@@ -461,13 +472,13 @@ export default function UploadAnalysisPanel({
                       {jobRequiredSkills.map((skill, i) => (
                         <span
                           key={i}
-                          className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-md text-[11px] font-mono bg-[#E8F5E9] dark:bg-[#115e30] text-[#2E7D32] dark:text-white border border-[#C8E6C9] dark:border-[#1e8247] font-semibold group"
+                          className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-md text-[11px] font-mono bg-[#DBEAFE] dark:bg-[#111C2E] text-[#1D4ED8] dark:text-white border border-[#BFDBFE] dark:border-[#253247] font-semibold group"
                         >
                           <span>{skill}</span>
                           <button
                             type="button"
                             onClick={() => handleRemoveSkill(skill)}
-                            className="p-0.5 rounded hover:bg-red-500 hover:text-white text-[#4CAF4F] dark:text-[#FFC72C] transition-colors"
+                            className="p-0.5 rounded hover:bg-red-500 hover:text-white text-[#2563EB] dark:text-[#2563EB] transition-colors"
                             title={`Remove ${skill}`}
                           >
                             <X className="w-3 h-3" />
@@ -480,8 +491,8 @@ export default function UploadAnalysisPanel({
 
                 {/* Quick Add Suggestions */}
                 <div className="space-y-1 pt-0.5">
-                  <div className="text-[10px] uppercase font-bold tracking-wider text-[#89939E] dark:text-[#FFC72C] flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-[#4CAF4F] dark:text-[#FFC72C]" />
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-[#94A3B8] dark:text-[#2563EB] flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-[#2563EB] dark:text-[#2563EB]" />
                     <span>Click to Quick-Add Skills:</span>
                   </div>
                   <div className="flex flex-wrap gap-1">
@@ -490,7 +501,7 @@ export default function UploadAnalysisPanel({
                         key={sIdx}
                         type="button"
                         onClick={() => handleAddSkill(sug)}
-                        className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-white dark:bg-[#083d1c] text-[#4D4D4D] dark:text-white hover:border-[#4CAF4F] hover:text-[#4CAF4F] dark:hover:text-[#FFC72C] border border-[#E4E7EB] dark:border-[#1e8247] transition-all shadow-xs"
+                        className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-white dark:bg-[#0B1220] text-[#1E293B] dark:text-white hover:border-[#2563EB] hover:text-[#2563EB] dark:hover:text-[#2563EB] border border-[#E2E8F0] dark:border-[#253247] transition-all shadow-xs"
                       >
                         + {sug}
                       </button>
@@ -504,14 +515,14 @@ export default function UploadAnalysisPanel({
               <div className="grid grid-cols-2 gap-3 pt-1">
                 
                 <div className="space-y-1">
-                  <label className="text-xs text-[#4D4D4D] dark:text-[#E8F5E9] flex items-center gap-1 font-semibold">
-                    <MapPin className="w-3.5 h-3.5 text-[#4CAF4F] dark:text-[#FFC72C]" />
+                  <label className="text-xs text-[#1E293B] dark:text-[#DBEAFE] flex items-center gap-1 font-semibold">
+                    <MapPin className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#2563EB]" />
                     <span>Target Location</span>
                   </label>
                   <select
                     value={preferences.preferredLocation}
                     onChange={(e) => setPreferences({ ...preferences, preferredLocation: e.target.value })}
-                    className="w-full rounded-lg p-2 text-xs bg-[#F5F7FA] dark:bg-[#083d1c] text-[#263238] dark:text-white border border-[#E4E7EB] dark:border-[#1e8247]"
+                    className="w-full rounded-lg p-2 text-xs bg-[#F8FAFC] dark:bg-[#0B1220] text-[#1E293B] dark:text-white border border-[#E2E8F0] dark:border-[#253247]"
                   >
                     <option value="Any">Any / Global</option>
                     <option value="Remote">Remote Only</option>
@@ -524,14 +535,14 @@ export default function UploadAnalysisPanel({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs text-[#4D4D4D] dark:text-[#E8F5E9] flex items-center gap-1 font-semibold">
-                    <DollarSign className="w-3.5 h-3.5 text-[#4CAF4F] dark:text-[#FFC72C]" />
+                  <label className="text-xs text-[#1E293B] dark:text-[#DBEAFE] flex items-center gap-1 font-semibold">
+                    <DollarSign className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#2563EB]" />
                     <span>Salary Bracket</span>
                   </label>
                   <select
                     value={preferences.preferredSalary}
                     onChange={(e) => setPreferences({ ...preferences, preferredSalary: e.target.value })}
-                    className="w-full rounded-lg p-2 text-xs bg-[#F5F7FA] dark:bg-[#083d1c] text-[#263238] dark:text-white border border-[#E4E7EB] dark:border-[#1e8247]"
+                    className="w-full rounded-lg p-2 text-xs bg-[#F8FAFC] dark:bg-[#0B1220] text-[#1E293B] dark:text-white border border-[#E2E8F0] dark:border-[#253247]"
                   >
                     <option value="Any">Market Standard</option>
                     <option value="High">Top Tier ($120k+ / ₹18LPA+)</option>
@@ -546,13 +557,13 @@ export default function UploadAnalysisPanel({
           </div>
 
           {/* ACTION BUTTON: RUN ANALYSIS */}
-          <div className="pt-4 border-t border-[#E4E7EB] dark:border-[#1e8247] flex flex-col sm:flex-row items-center justify-end gap-3">
+          <div className="pt-4 border-t border-[#E2E8F0] dark:border-[#253247] flex flex-col sm:flex-row items-center justify-end gap-3">
             
             <button
               type="button"
               onClick={handleReset}
               disabled={isAnalyzing}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-lg font-semibold text-xs text-[#717171] dark:text-white hover:text-red-600 bg-[#F5F7FA] dark:bg-[#083d1c] hover:bg-red-50 dark:hover:bg-red-900/20 border border-[#E4E7EB] dark:border-[#1e8247] flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-lg font-semibold text-xs text-[#64748B] dark:text-white hover:text-red-600 bg-[#F8FAFC] dark:bg-[#0B1220] hover:bg-red-50 dark:hover:bg-red-900/20 border border-[#E2E8F0] dark:border-[#253247] flex items-center justify-center gap-2 transition-all disabled:opacity-50"
             >
               <Trash2 className="w-4 h-4" />
               <span>Reset</span>
@@ -561,21 +572,21 @@ export default function UploadAnalysisPanel({
             <button
               type="submit"
               disabled={isAnalyzing}
-              className={`w-full sm:w-auto px-7 py-2.5 rounded-lg font-bold text-xs text-white dark:text-[#083d1c] flex items-center justify-center gap-2 shadow-sm transition-all ${
+              className={`w-full sm:w-auto px-7 py-2.5 rounded-lg font-bold text-xs text-white dark:text-white flex items-center justify-center gap-2 shadow-sm transition-all ${
               isAnalyzing
-                ? 'bg-[#4CAF4F]/60 dark:bg-[#FAB818]/60 cursor-not-allowed'
-                : 'bg-[#4CAF4F] hover:bg-[#388E3C] dark:bg-[#FAB818] dark:hover:bg-[#FFC72C] hover:shadow-md hover:scale-[1.01] active:scale-98'
+                ? 'bg-[#2563EB]/60 dark:bg-[#2563EB]/60 cursor-not-allowed'
+                : 'bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-[#2563EB] dark:hover:bg-[#2563EB] hover:shadow-md hover:scale-[1.01] active:scale-98'
               }`}
             >
               {isAnalyzing ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-white dark:text-[#083d1c]" />
+                  <Loader2 className="w-4 h-4 animate-spin text-white dark:text-white" />
                   <span>Processing Analysis...</span>
                 </>
               ) : (
                 <>
                   <span>Analyze Resume & Recommend Careers</span>
-                  <ArrowRight className="w-4 h-4 text-white dark:text-[#083d1c]" />
+                  <ArrowRight className="w-4 h-4 text-white dark:text-white" />
                 </>
               )}
             </button>

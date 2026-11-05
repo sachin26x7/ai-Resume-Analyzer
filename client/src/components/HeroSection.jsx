@@ -1,38 +1,64 @@
-import { ShieldCheck, ArrowRight } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
 
-export default function HeroSection({ onScrollToUpload }) {
+export default function HeroSection({ onScrollToUpload, onExploreFeatures }) {
   return (
-    <section className="relative pt-10 pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className="text-center max-w-3xl mx-auto space-y-4">
-        
-        {/* Framework Pill */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E8F5E9] dark:bg-[#083d1c] border border-[#C8E6C9] dark:border-[#1e8247] text-[#2E7D32] dark:text-[#E8F5E9] text-xs font-semibold shadow-xs">
-          <ShieldCheck className="w-4 h-4 text-[#4CAF4F] dark:text-[#FFC72C]" />
-          <span>AI-Powered NLP Framework • ATS Intelligence Engine</span>
+    <section className="hero-section">
+      <div className="site-container hero-layout">
+        <div className="hero-copy">
+          <div className="hero-proof">
+            <ShieldCheck aria-hidden="true" />
+            <span>Resume feedback, built around your next move</span>
+          </div>
+          <h1>Your next opportunity starts with a <span>stronger resume.</span></h1>
+          <p>
+            Analyze your resume, identify skill gaps, and get actionable feedback
+            to make your next application count.
+          </p>
+          <div className="hero-actions">
+            <button type="button" className="primary-action" onClick={onScrollToUpload}>
+              Analyze my resume <ArrowRight aria-hidden="true" />
+            </button>
+            <button type="button" className="secondary-action" onClick={onExploreFeatures}>
+              Explore features
+            </button>
+          </div>
+          <div className="hero-footnote">
+            <Sparkles aria-hidden="true" />
+            <span>Clear scoring. Practical feedback. Your next step, made clearer.</span>
+          </div>
         </div>
-
-        {/* Headline */}
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#4D4D4D] dark:text-white leading-tight">
-          Transparent ATS Resume Scoring <br />
-          <span className="text-[#4CAF4F] dark:text-[#FFC72C]">and Career Recommendation</span>
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-[#717171] dark:text-[#E8F5E9] text-sm sm:text-base leading-relaxed max-w-2xl mx-auto font-normal">
-          Get transparent multi-factor scoring, actionable NLP skill gap elimination, and tailored Indian tech hub career recommendations.
-        </p>
-
-        {/* Quick Action Button */}
-        <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-          <button
-            onClick={onScrollToUpload}
-            className="px-6 py-3 rounded-lg font-bold text-sm bg-[#4CAF4F] hover:bg-[#388E3C] dark:bg-[#FAB818] dark:hover:bg-[#FFC72C] text-white dark:text-[#083d1c] flex items-center gap-2 transition-all shadow-md active:scale-98"
-          >
-            <span>Start Resume Analysis</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+        <div className="hero-visual" aria-label="Illustration of resume analysis">
+          <div className="preview-topline">
+            <span className="preview-mark"><span /></span>
+            <div><strong>Resume review</strong><small>Role-specific insights</small></div>
+            <span className="preview-status"><span /> Ready to analyze</span>
+          </div>
+          <div className="preview-document">
+            <div className="document-header">
+              <span className="document-avatar">JD</span>
+              <div><i className="document-line wide" /><i className="document-line medium" /></div>
+            </div>
+            <div className="document-section">
+              <i className="document-label" />
+              <i className="document-line full" /><i className="document-line long" />
+              <i className="document-line medium" />
+            </div>
+            <div className="document-section">
+              <i className="document-label" />
+              <i className="document-line full" /><i className="document-line long" />
+              <i className="document-line short" />
+            </div>
+            <div className="document-section">
+              <i className="document-label" />
+              <div className="document-tags"><i /><i /><i /><i /></div>
+            </div>
+          </div>
+          <div className="preview-insight">
+            <span className="insight-icon"><Sparkles aria-hidden="true" /></span>
+            <div><strong>Actionable insights</strong><small>Skills, structure & role alignment</small></div>
+            <ArrowRight aria-hidden="true" />
+          </div>
         </div>
-
       </div>
     </section>
   );

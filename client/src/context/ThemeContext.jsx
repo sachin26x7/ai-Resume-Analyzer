@@ -10,7 +10,7 @@ export function ThemeProvider({ children }) {
         return savedTheme;
       }
     } catch (e) {}
-    return 'dark'; // Dark mode is default
+    return 'light'; // Public-facing experience defaults to light mode
   });
 
   useEffect(() => {

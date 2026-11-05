@@ -118,34 +118,48 @@ export default function CareerRecommendationsDeck({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+        <div>
+          <span className="text-[11px] font-semibold tracking-wider uppercase text-[#2563EB]">Career opportunities</span>
+          <h3 className="text-lg sm:text-xl font-semibold tracking-tight text-[#1E293B] dark:text-[#F1F5F9] mt-1">
+            Recommended openings
+          </h3>
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
+            Roles to explore based on your resume and target career.
+          </p>
+        </div>
+        <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+          {filteredJobs.length} {filteredJobs.length === 1 ? 'opening' : 'openings'}
+        </span>
+      </div>
       
       {/* FILTER & SEARCH BAR */}
-      <div className="bg-white dark:bg-[#143524] p-4 rounded-xl space-y-3.5 border border-[#E4E7EB] dark:border-[#2d5b3e] shadow-xs">
+      <div className="bg-white dark:bg-[#111C2E] p-4 sm:p-5 rounded-xl space-y-4 border border-[#E2E8F0] dark:border-[#253247] shadow-sm">
         <div className="flex flex-col sm:flex-row items-center gap-3">
           
           {/* Search Input */}
           <div className="relative flex-1 w-full">
-            <Search className="w-4 h-4 text-[#89939E] dark:text-[#81C784] absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by role, company (e.g. Swiggy, TCS), or skill (e.g. React, Python)..."
-              className="w-full rounded-lg pl-9 pr-3 py-2 text-xs bg-[#F5F7FA] dark:bg-[#083d1c] text-[#263238] dark:text-white border border-[#E4E7EB] dark:border-[#1e8247]"
+              className="w-full rounded-lg pl-9 pr-3 py-2 text-xs bg-[#F8FAFC] dark:bg-[#0B1220] text-[#1E293B] dark:text-white border border-[#E2E8F0] dark:border-[#253247]"
             />
           </div>
 
           {/* Location Selector Dropdown */}
           <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
-            <MapPin className="w-4 h-4 text-[#4CAF4F] dark:text-[#FFC72C] shrink-0" />
+            <MapPin className="w-4 h-4 text-[#2563EB] dark:text-[#2563EB] shrink-0" />
             <select
               value={selectedLocation}
               onChange={(e) => setSelectedLocation(e.target.value)}
-              className="w-full sm:w-auto rounded-lg px-3 py-2 text-xs font-semibold bg-[#F5F7FA] dark:bg-[#083d1c] text-[#263238] dark:text-white border border-[#E4E7EB] dark:border-[#1e8247]"
+              className="w-full sm:w-auto rounded-lg px-3 py-2 text-xs font-semibold bg-[#F8FAFC] dark:bg-[#0B1220] text-[#1E293B] dark:text-white border border-[#E2E8F0] dark:border-[#253247]"
             >
               {LOCATION_OPTIONS.map((loc, idx) => (
                 <option key={idx} value={loc}>
-                  📍 {loc}
+                  {loc}
                 </option>
               ))}
             </select>
@@ -155,17 +169,17 @@ export default function CareerRecommendationsDeck({
 
         {/* Quick Location Pills */}
         <div className="flex flex-wrap items-center gap-1.5 pt-1">
-          <span className="text-[10px] uppercase font-bold text-[#89939E] dark:text-[#FFC72C] mr-1 flex items-center gap-1">
-            <Filter className="w-3 h-3 text-[#4CAF4F] dark:text-[#FFC72C]" /> City:
+          <span className="text-[10px] uppercase font-semibold tracking-wide text-[#64748B] dark:text-[#94A3B8] mr-1 flex items-center gap-1">
+            <Filter className="w-3 h-3 text-[#2563EB] dark:text-[#2563EB]" /> City:
           </span>
           {LOCATION_OPTIONS.map((loc, idx) => (
             <button
               key={idx}
               onClick={() => setSelectedLocation(loc)}
-              className={`px-3 py-1 rounded-md text-[11px] font-mono transition-all font-semibold ${
+              className={`px-3 py-1.5 rounded-lg text-[11px] transition-all font-medium ${
                 selectedLocation === loc
-                  ? 'bg-[#4CAF4F] dark:bg-[#FAB818] text-white dark:text-[#083d1c] shadow-xs'
-                  : 'bg-[#F5F7FA] dark:bg-[#083d1c] text-[#717171] dark:text-white hover:text-[#4D4D4D] dark:hover:text-[#FFC72C] border border-[#E4E7EB] dark:border-[#1e8247]'
+                  ? 'bg-[#EFF6FF] dark:bg-[#2563EB]/15 text-[#1D4ED8] dark:text-[#93C5FD] border border-[#BFDBFE] dark:border-[#2563EB]/30'
+                  : 'bg-white dark:bg-[#182438] text-[#64748B] dark:text-[#94A3B8] hover:text-[#1E293B] dark:hover:text-[#F1F5F9] border border-[#E2E8F0] dark:border-[#253247]'
               }`}
             >
               {loc}
@@ -174,18 +188,18 @@ export default function CareerRecommendationsDeck({
         </div>
 
         {/* Domain Category Filter Chips */}
-        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#E4E7EB] dark:border-[#1e8247]">
-          <span className="text-[10px] uppercase font-bold text-[#89939E] dark:text-[#FFC72C] mr-1 flex items-center gap-1">
-            <Filter className="w-3 h-3 text-[#4CAF4F] dark:text-[#FFC72C]" /> Domain:
+        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#E2E8F0] dark:border-[#253247]">
+          <span className="text-[10px] uppercase font-semibold tracking-wide text-[#64748B] dark:text-[#94A3B8] mr-1 flex items-center gap-1">
+            <Filter className="w-3 h-3 text-[#2563EB] dark:text-[#2563EB]" /> Domain:
           </span>
           {DOMAIN_FILTERS.map((df) => (
             <button
               key={df.id}
               onClick={() => setSelectedDomain(df.id)}
-              className={`px-3 py-1 rounded-md text-[11px] font-mono transition-all font-semibold ${
+              className={`px-3 py-1.5 rounded-lg text-[11px] transition-all font-medium ${
                 selectedDomain === df.id
-                  ? 'bg-[#4CAF4F] dark:bg-[#FAB818] text-white dark:text-[#083d1c] shadow-xs'
-                  : 'bg-[#F5F7FA] dark:bg-[#083d1c] text-[#717171] dark:text-white hover:text-[#4D4D4D] dark:hover:text-[#FFC72C] border border-[#E4E7EB] dark:border-[#1e8247]'
+                  ? 'bg-[#EFF6FF] dark:bg-[#2563EB]/15 text-[#1D4ED8] dark:text-[#93C5FD] border border-[#BFDBFE] dark:border-[#2563EB]/30'
+                  : 'bg-white dark:bg-[#182438] text-[#64748B] dark:text-[#94A3B8] hover:text-[#1E293B] dark:hover:text-[#F1F5F9] border border-[#E2E8F0] dark:border-[#253247]'
               }`}
             >
               {df.label}
@@ -196,10 +210,10 @@ export default function CareerRecommendationsDeck({
 
       {/* JOBS GRID */}
       {filteredJobs.length === 0 ? (
-        <div className="p-12 text-center text-[#717171] dark:text-[#E8F5E9] bg-white dark:bg-[#115e30] rounded-xl space-y-3 border border-[#E4E7EB] dark:border-[#1e8247]">
-          <Building2 className="w-10 h-10 text-[#4CAF4F] dark:text-[#FFC72C] mx-auto" />
-          <p className="text-sm font-bold text-[#263238] dark:text-white">No matching openings found in {selectedLocation}</p>
-          <p className="text-xs text-[#717171] dark:text-[#E8F5E9]">Try selecting "All Locations" or exploring other domain filters.</p>
+        <div className="p-12 text-center text-[#64748B] dark:text-[#DBEAFE] bg-white dark:bg-[#111C2E] rounded-xl space-y-3 border border-[#E2E8F0] dark:border-[#253247]">
+          <Building2 className="w-10 h-10 text-[#2563EB] dark:text-[#2563EB] mx-auto" />
+          <p className="text-sm font-bold text-[#1E293B] dark:text-white">No matching openings found in {selectedLocation}</p>
+          <p className="text-xs text-[#64748B] dark:text-[#DBEAFE]">Try selecting "All Locations" or exploring other domain filters.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -210,29 +224,30 @@ export default function CareerRecommendationsDeck({
             return (
               <div
                 key={job.id}
-                className="bg-white dark:bg-[#142c21] p-5 rounded-xl space-y-4 flex flex-col justify-between border border-[#E4E7EB] dark:border-[#28523a] hover:border-[#FFC72C] hover:shadow-md transition-all relative group shadow-xs"
+                className="bg-white dark:bg-[#111C2E] p-5 rounded-xl space-y-4 flex flex-col justify-between border border-[#E2E8F0] dark:border-[#253247] hover:border-[#BFDBFE] dark:hover:border-[#2563EB]/60 hover:shadow-md transition-all relative group shadow-sm"
               >
                 {/* Top Badge & Save Bookmark */}
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-1.5">
                     {job.badge && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-[#E8F5E9] dark:bg-[#FAB818] text-[#2E7D32] dark:text-[#083d1c] flex items-center gap-1">
+                      <span className="px-2 py-1 rounded-md text-[10px] font-semibold bg-[#EFF6FF] dark:bg-[#2563EB]/15 text-[#1D4ED8] dark:text-[#93C5FD] border border-[#DBEAFE] dark:border-[#2563EB]/25 flex items-center gap-1">
                         <Flame className="w-3 h-3" />
                         {job.badge}
                       </span>
                     )}
-                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold font-mono bg-[#F5F7FA] dark:bg-[#083d1c] text-[#717171] dark:text-white border border-[#E4E7EB] dark:border-[#1e8247]">
+                    <span className="px-2 py-1 rounded-md text-[10px] font-medium bg-[#F8FAFC] dark:bg-[#182438] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#253247]">
                       {job.type}
                     </span>
                   </div>
 
                   <button
                     onClick={() => toggleSaveJob(job.id)}
-                    className="text-[#89939E] dark:text-[#E8F5E9] hover:text-[#4CAF4F] dark:hover:text-[#FFC72C] transition-colors p-1"
+                    className="w-8 h-8 grid place-items-center rounded-lg text-[#94A3B8] hover:text-[#2563EB] hover:bg-[#EFF6FF] dark:hover:text-[#93C5FD] dark:hover:bg-[#182438] transition-colors"
                     title={isSaved ? "Saved to bookmarks" : "Save opening"}
+                    aria-label={isSaved ? `Remove ${job.title} from saved openings` : `Save ${job.title}`}
                   >
                     {isSaved ? (
-                      <BookmarkCheck className="w-4 h-4 text-[#4CAF4F] dark:text-[#FFC72C]" />
+                      <BookmarkCheck className="w-4 h-4 text-[#2563EB] dark:text-[#2563EB]" />
                     ) : (
                       <Bookmark className="w-4 h-4" />
                     )}
@@ -242,17 +257,17 @@ export default function CareerRecommendationsDeck({
                 {/* Job Title & Company Header */}
                 <div className="space-y-2">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#F5F7FA] dark:bg-[#102419] border border-[#E4E7EB] dark:border-[#28523a] flex items-center justify-center text-xl shrink-0">
-                      {job.companyLogo || '🏢'}
+                    <div className="w-10 h-10 rounded-lg bg-[#F8FAFC] dark:bg-[#182438] border border-[#E2E8F0] dark:border-[#253247] flex items-center justify-center text-xl shrink-0">
+                      {job.companyLogo || <Building2 className="w-5 h-5 text-[#64748B] dark:text-[#94A3B8]" />}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="text-sm font-bold text-[#263238] dark:text-white group-hover:text-[#4CAF4F] dark:group-hover:text-[#FFC72C] transition-colors leading-snug line-clamp-2">
+                      <h4 className="text-sm font-bold text-[#1E293B] dark:text-white group-hover:text-[#2563EB] dark:group-hover:text-[#2563EB] transition-colors leading-snug line-clamp-2">
                         {job.title}
                       </h4>
-                      <div className="flex items-center gap-1.5 text-xs text-[#717171] dark:text-[#E8F5E9] pt-0.5">
-                        <span className="font-semibold text-[#4CAF4F] dark:text-[#FFC72C] truncate">{job.company}</span>
+                      <div className="flex items-center gap-1.5 text-xs text-[#64748B] dark:text-[#94A3B8] pt-1">
+                        <span className="font-semibold text-[#2563EB] dark:text-[#2563EB] truncate">{job.company}</span>
                         {job.verified && (
-                          <span className="text-[#4CAF4F] dark:text-[#FFC72C] text-[10px]" title="Verified">✓</span>
+                          <span className="text-[#2563EB] dark:text-[#2563EB] text-[10px]" title="Verified">✓</span>
                         )}
                         <span className="text-[11px] text-amber-500 flex items-center gap-0.5 font-mono font-bold">
                           <Star className="w-3 h-3 fill-amber-500" /> {job.companyRating || '4.3'}
@@ -263,41 +278,41 @@ export default function CareerRecommendationsDeck({
 
                   {/* Location & Stipend Specs */}
                   <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
-                    <div className="p-2 rounded-lg bg-[#F5F7FA] dark:bg-[#102419] border border-[#E4E7EB] dark:border-[#28523a]">
-                      <span className="text-[10px] text-[#89939E] dark:text-[#C8E6C9] flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-[#4CAF4F] dark:text-[#FFC72C]" />
+                    <div className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#182438] border border-[#E2E8F0] dark:border-[#253247]">
+                      <span className="text-[10px] text-[#64748B] dark:text-[#94A3B8] flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-[#2563EB] dark:text-[#2563EB]" />
                         <span>Location / Hub</span>
                       </span>
-                      <span className="font-bold text-[#263238] dark:text-white text-[11px] truncate block mt-0.5">
+                      <span className="font-bold text-[#1E293B] dark:text-white text-[11px] truncate block mt-0.5">
                         {job.officeHub ? job.officeHub.split(',')[0] : (job.location || 'India')}
                       </span>
                     </div>
 
-                    <div className="p-2 rounded-lg bg-[#F5F7FA] dark:bg-[#102419] border border-[#E4E7EB] dark:border-[#28523a]">
-                      <span className="text-[10px] text-[#89939E] dark:text-[#C8E6C9] flex items-center gap-1">
-                        <DollarSign className="w-3 h-3 text-[#4CAF4F] dark:text-[#FFC72C]" />
+                    <div className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#182438] border border-[#E2E8F0] dark:border-[#253247]">
+                      <span className="text-[10px] text-[#64748B] dark:text-[#94A3B8] flex items-center gap-1">
+                        <DollarSign className="w-3 h-3 text-[#2563EB] dark:text-[#2563EB]" />
                         <span>{isInternship ? 'Stipend' : 'CTC / Salary'}</span>
                       </span>
-                      <span className="font-bold text-[#263238] dark:text-white text-[11px] truncate block mt-0.5">
+                      <span className="font-bold text-[#1E293B] dark:text-white text-[11px] truncate block mt-0.5">
                         {job.stipend || (isInternship ? '₹25k - ₹40k/mo' : '₹8 - ₹16 LPA')}
                       </span>
                     </div>
                   </div>
 
                   {/* ATS Skill Match Affinity Progress Bar */}
-                  <div className="p-2.5 rounded-lg bg-[#F5F7FA] dark:bg-[#102419] border border-[#E4E7EB] dark:border-[#28523a] space-y-1.5">
+                  <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#182438] border border-[#E2E8F0] dark:border-[#253247] space-y-2">
                     <div className="flex justify-between items-center text-[11px]">
-                      <span className="text-[#4D4D4D] dark:text-white flex items-center gap-1 font-semibold">
-                        <Sparkles className="w-3 h-3 text-[#4CAF4F] dark:text-[#FFC72C]" />
+                      <span className="text-[#1E293B] dark:text-white flex items-center gap-1 font-semibold">
+                        <Sparkles className="w-3 h-3 text-[#2563EB] dark:text-[#2563EB]" />
                         <span>Skill Overlap:</span>
                       </span>
-                      <span className="font-bold font-mono text-[#4CAF4F] dark:text-[#FFC72C]">
+                      <span className="font-semibold text-[#2563EB] dark:text-[#93C5FD]">
                         {job.matchPercentage || 78}%
                       </span>
                     </div>
-                    <div className="w-full bg-[#E4E7EB] dark:bg-[#115e30] rounded-full h-1.5 overflow-hidden">
+                    <div className="w-full bg-[#E2E8F0] dark:bg-[#111C2E] rounded-full h-1.5 overflow-hidden">
                       <div
-                        className="bg-[#4CAF4F] dark:bg-[#FFC72C] h-1.5 rounded-full transition-all"
+                        className="bg-[#2563EB] dark:bg-[#2563EB] h-1.5 rounded-full transition-all"
                         style={{ width: `${Math.max(job.matchPercentage || 75, 5)}%` }}
                       />
                     </div>
@@ -312,8 +327,8 @@ export default function CareerRecommendationsDeck({
                           key={sIdx}
                           className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold ${
                             isMatched
-                              ? 'bg-[#E8F5E9] dark:bg-[#FAB818] text-[#2E7D32] dark:text-[#083d1c]'
-                              : 'bg-[#F5F7FA] dark:bg-[#083d1c] text-[#717171] dark:text-white border border-[#E4E7EB] dark:border-[#1e8247]'
+                              ? 'bg-[#EFF6FF] dark:bg-[#2563EB]/15 text-[#1D4ED8] dark:text-[#93C5FD] border border-[#DBEAFE] dark:border-[#2563EB]/25'
+                              : 'bg-[#F8FAFC] dark:bg-[#182438] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#253247]'
                           }`}
                         >
                           {isMatched ? `✓ ${skill}` : skill}
@@ -325,15 +340,15 @@ export default function CareerRecommendationsDeck({
                 </div>
 
                 {/* Card Action Buttons */}
-                <div className="pt-3 border-t border-[#E4E7EB] dark:border-[#1e8247] flex items-center justify-between gap-2">
-                  <span className="text-[10px] text-[#89939E] dark:text-[#E8F5E9] font-mono flex items-center gap-1">
+                <div className="pt-3 border-t border-[#E2E8F0] dark:border-[#253247] flex items-center justify-between gap-2">
+                  <span className="text-[10px] text-[#94A3B8] font-medium flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5" />
                     <span>{job.postedAgo || '2 days ago'}</span>
                   </span>
 
                   <button
                     onClick={() => setSelectedJobModal(job)}
-                    className="px-3.5 py-1.5 rounded-lg bg-[#4CAF4F] hover:bg-[#388E3C] dark:bg-[#FAB818] dark:hover:bg-[#FFC72C] text-white dark:text-[#083d1c] text-xs font-bold transition-all shadow-xs active:scale-95"
+                    className="px-3.5 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium transition-all shadow-sm active:scale-95"
                   >
                     View Details
                   </button>
@@ -347,26 +362,26 @@ export default function CareerRecommendationsDeck({
 
       {/* QUICK VIEW DETAILS MODAL */}
       {selectedJobModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-[#083d1c]/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white dark:bg-[#115e30] p-6 rounded-xl max-w-xl w-full border border-[#E4E7EB] dark:border-[#1e8247] space-y-4 relative max-h-[90vh] overflow-y-auto shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-[#0B1220]/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white dark:bg-[#111C2E] p-6 rounded-xl max-w-xl w-full border border-[#E2E8F0] dark:border-[#253247] space-y-4 relative max-h-[90vh] overflow-y-auto shadow-xl">
             
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-[#F5F7FA] dark:bg-[#083d1c] border border-[#E4E7EB] dark:border-[#1e8247] flex items-center justify-center text-2xl">
+                <div className="w-12 h-12 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1220] border border-[#E2E8F0] dark:border-[#253247] flex items-center justify-center text-2xl">
                   {selectedJobModal.companyLogo || '🏢'}
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-[#263238] dark:text-white leading-snug">
+                  <h3 className="text-base font-bold text-[#1E293B] dark:text-white leading-snug">
                     {selectedJobModal.title}
                   </h3>
-                  <p className="text-xs text-[#717171] dark:text-[#E8F5E9]">
+                  <p className="text-xs text-[#64748B] dark:text-[#DBEAFE]">
                     {selectedJobModal.company} • {selectedJobModal.officeHub || selectedJobModal.location} ({selectedJobModal.type})
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedJobModal(null)}
-                className="p-1.5 rounded-lg text-[#717171] dark:text-white hover:bg-gray-100 dark:hover:bg-[#083d1c] transition-colors"
+                className="p-1.5 rounded-lg text-[#64748B] dark:text-white hover:bg-gray-100 dark:hover:bg-[#0B1220] transition-colors"
               >
                 ✕
               </button>
@@ -374,37 +389,37 @@ export default function CareerRecommendationsDeck({
 
             {/* Quick Specs Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-              <div className="p-2.5 rounded-lg bg-[#F5F7FA] dark:bg-[#083d1c] border border-[#E4E7EB] dark:border-[#1e8247]">
-                <span className="text-[10px] text-[#89939E] dark:text-[#C8E6C9] block">Stipend / Salary</span>
-                <span className="font-bold text-[#263238] dark:text-white text-xs">{selectedJobModal.stipend || 'Competitive'}</span>
+              <div className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1220] border border-[#E2E8F0] dark:border-[#253247]">
+                <span className="text-[10px] text-[#94A3B8] dark:text-[#BFDBFE] block">Stipend / Salary</span>
+                <span className="font-bold text-[#1E293B] dark:text-white text-xs">{selectedJobModal.stipend || 'Competitive'}</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#F5F7FA] dark:bg-[#083d1c] border border-[#E4E7EB] dark:border-[#1e8247]">
-                <span className="text-[10px] text-[#89939E] dark:text-[#C8E6C9] block">Duration</span>
-                <span className="font-bold text-[#263238] dark:text-white text-xs">{selectedJobModal.duration || 'Full-time'}</span>
+              <div className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1220] border border-[#E2E8F0] dark:border-[#253247]">
+                <span className="text-[10px] text-[#94A3B8] dark:text-[#BFDBFE] block">Duration</span>
+                <span className="font-bold text-[#1E293B] dark:text-white text-xs">{selectedJobModal.duration || 'Full-time'}</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#F5F7FA] dark:bg-[#083d1c] border border-[#E4E7EB] dark:border-[#1e8247]">
-                <span className="text-[10px] text-[#89939E] dark:text-[#C8E6C9] block">Match Score</span>
-                <span className="font-bold text-[#4CAF4F] dark:text-[#FFC72C] text-xs">{selectedJobModal.matchPercentage || 78}% Skill Fit</span>
+              <div className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1220] border border-[#E2E8F0] dark:border-[#253247]">
+                <span className="text-[10px] text-[#94A3B8] dark:text-[#BFDBFE] block">Match Score</span>
+                <span className="font-bold text-[#2563EB] dark:text-[#2563EB] text-xs">{selectedJobModal.matchPercentage || 78}% Skill Fit</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#F5F7FA] dark:bg-[#083d1c] border border-[#E4E7EB] dark:border-[#1e8247]">
-                <span className="text-[10px] text-[#89939E] dark:text-[#C8E6C9] block">Openings</span>
-                <span className="font-bold text-[#263238] dark:text-white text-xs">{selectedJobModal.openings || '4'} Openings</span>
+              <div className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1220] border border-[#E2E8F0] dark:border-[#253247]">
+                <span className="text-[10px] text-[#94A3B8] dark:text-[#BFDBFE] block">Openings</span>
+                <span className="font-bold text-[#1E293B] dark:text-white text-xs">{selectedJobModal.openings || '4'} Openings</span>
               </div>
             </div>
 
             {/* Description */}
             <div className="space-y-1.5">
-              <h4 className="text-xs font-bold text-[#4D4D4D] dark:text-[#FFC72C] uppercase tracking-wide">Job Description & Tech Hub</h4>
-              <p className="text-xs text-[#4D4D4D] dark:text-white leading-relaxed bg-[#F5F7FA] dark:bg-[#083d1c] p-3.5 rounded-lg border border-[#E4E7EB] dark:border-[#1e8247]">
+              <h4 className="text-xs font-bold text-[#1E293B] dark:text-[#2563EB] uppercase tracking-wide">Job Description & Tech Hub</h4>
+              <p className="text-xs text-[#1E293B] dark:text-white leading-relaxed bg-[#F8FAFC] dark:bg-[#0B1220] p-3.5 rounded-lg border border-[#E2E8F0] dark:border-[#253247]">
                 {selectedJobModal.description || 'Join a fast-paced development team building mission-critical services.'}
               </p>
             </div>
 
             {/* Modal Actions */}
-            <div className="pt-3 border-t border-[#E4E7EB] dark:border-[#1e8247] flex justify-end items-center">
+            <div className="pt-3 border-t border-[#E2E8F0] dark:border-[#253247] flex justify-end items-center">
               <button
                 onClick={() => setSelectedJobModal(null)}
-                className="px-5 py-2 rounded-lg bg-[#F5F7FA] hover:bg-[#E4E7EB] dark:bg-[#083d1c] dark:hover:bg-[#FAB818] dark:hover:text-[#083d1c] text-[#263238] dark:text-white text-xs font-semibold transition-colors border border-[#E4E7EB] dark:border-[#1e8247]"
+                className="px-5 py-2 rounded-lg bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#0B1220] dark:hover:bg-[#2563EB] dark:hover:text-[#0B1220] text-[#1E293B] dark:text-white text-xs font-semibold transition-colors border border-[#E2E8F0] dark:border-[#253247]"
               >
                 Close
               </button>
